@@ -9,6 +9,7 @@ STYLEDIR=$(BASEDIR)/style
 
 BIBFILE=$(INPUTDIR)/references.bib
 
+
 help:
 	@echo ' 																	  '
 	@echo 'Makefile for the Markdown thesis                                       '
@@ -26,35 +27,41 @@ help:
 
 pdf:
 	pandoc "$(INPUTDIR)"/*.md \
+	--filter pandoc-fignos \
 	--filter pandoc-shortcaption \
+	--filter pandoc-citeproc \
+	--bibliography="$(BIBFILE)" 2>pandoc.log \
 	-o "$(OUTPUTDIR)/thesis.pdf" \
 	-H "$(STYLEDIR)/preamble.tex" \
 	--template="$(STYLEDIR)/template.tex" \
-	--bibliography="$(BIBFILE)" 2>pandoc.log \
 	--csl="$(STYLEDIR)/ref_format.csl" \
 	--highlight-style pygments \
 	-V fontsize=12pt \
 	-V papersize=a4paper \
 	-V documentclass:report \
 	-N \
-	--latex-engine=xelatex 
+	--latex-engine=xelatex \
+	--verbose
 
 tex:
 	pandoc "$(INPUTDIR)"/*.md \
 	-o "$(OUTPUTDIR)/thesis.tex" \
 	-H "$(STYLEDIR)/preamble.tex" \
-	--bibliography="$(BIBFILE)" \
 	-V fontsize=12pt \
 	-V papersize=a4paper \
 	-V documentclass:report \
 	-N \
-	--filter pandoc-shortcaption
+	--filter pandoc-fignos \
+	--filter pandoc-shortcaption \
+	--filter pandoc-citeproc \
+	--bibliography="$(BIBFILE)" \
 	--csl="$(STYLEDIR)/ref_format.csl"
 
 docx:
 	pandoc "$(INPUTDIR)"/*.md \
 	-o "$(OUTPUTDIR)/thesis.docx" \
 	--bibliography="$(BIBFILE)" \
+	--filter pandoc-fignos \
 	--csl="$(STYLEDIR)/ref_format.csl" \
 	--toc
 
@@ -62,6 +69,7 @@ html:
 	pandoc "$(INPUTDIR)"/*.md \
 	-o "$(OUTPUTDIR)/thesis.html" \
 	--standalone \
+	--filter pandoc-fignos \
 	--template="$(STYLEDIR)/template.html" \
 	--bibliography="$(BIBFILE)" \
 	--csl="$(STYLEDIR)/ref_format.csl" \

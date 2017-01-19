@@ -1,48 +1,51 @@
-<!-- 
-This is the Latex-heavy title page. 
-People outside UCL may want to remove the header logo 
-and add the centred logo
+<!--
+This is the Latex-heavy title page.
 -->
 
 \begin{titlepage}
     \begin{center}
 
-    % Delete the following line
-    % to remove the UCL header logo
-    \ThisULCornerWallPaper{1.0}{style/univ_logo.eps}
-        
+        % Uncomment the following line
+        % to add a centered university logo
+        \includegraphics[width=0.4\textwidth]{style/hdm_logo.eps}
+
         \vspace*{2.5cm}
-        
+
         \huge
         This is the title of the thesis
-        
+
         \vspace{1.5cm}
-        
+
+
+
+        \vspace{1.5cm}
+
         \Large
-        Firstname Surname
-
-        \vspace{1.5cm}
-
+        Master-Thesis \\
         \normalsize
-        A thesis presented for the degree of\\
-        Doctor of Philosophy
-        
-        \vfill
-        
-        \normalsize
-        Supervised by:\\
-        Professor Louis Fage\\
-        Captain J. Y. Cousteau
+        im Studiengang Computer Science and Media\\
+        vorgelegt von \\
+        \Large
+        Daniel Grießhaber \\
+        Matrikelnummer: 30794
 
         \vspace{0.8cm}
 
-        % Uncomment the following line
-        % to add a centered university logo
-        % \includegraphics[width=0.4\textwidth]{style/univ_logo.eps}
-        
         \normalsize
-        University College London, UK\\
-        January 2015
+        am 11. Mai 2017
+        an der Hochschule der Medien Stuttgart \\
+
+        \vspace{0.8cm}
+
+        zur Erlangung des akademischen Grades eines\\
+        Master of Science
+
+        \vfill
+
+        \normalsize
+        Erstprüfer: Prof. Dr. Johannes Maucher \\
+        Zeitprüfer: Prof. Walther Kriha \\
+
 
         % Except where otherwise noted, content in this thesis is licensed under a Creative Commons Attribution 4.0 License (http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited. Copyright 2015,Tom Pollard.
 
