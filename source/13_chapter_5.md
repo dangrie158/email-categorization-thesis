@@ -1,6 +1,12 @@
 
 # News Classification
 
+## word2vec ansatz mit basemodel
+warum basemodel:
+  - weil sonst wörter die nicht (oper selten) vorkommen random initialisiert werden
+  - lernen einer normalen sprache
+
+
 ## clustering (unsupervised on word2vec model)
 
 ## word2vec log likelyhood
@@ -34,8 +40,10 @@ but: most methods have a "confidence" e.g. log-likelihood
 -> confidence score
 if confidence < minimum score: don't sort the email
 
+speed / mem consumption: auch wenn initiales lernen ein "einmaliger" task ist ist geschwindigkeit immer gut. ausserdem müssen modelle eventuell neu gelert werden (z.B. wenn neue klassen hinzukommen oder andere hyperparameter verändert werden sollen)
+
 ## other metrics (input parameters)
-- metadata
+- metadata (auch wenn keine tests damit gemacht wurden weil der corpus fehlt ein paar gedanken dazu)
 - author (via SVD)
 - how to combine
 - maybe sometimes only the metadata is available (secured connections SMTP over SSL)

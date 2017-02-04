@@ -30,7 +30,7 @@ pdf:
 	--filter pandoc-fignos \
 	--filter pandoc-shortcaption \
 	--filter pandoc-citeproc \
-	--bibliography="$(BIBFILE)" 2>pandoc.log \
+	--bibliography="$(BIBFILE)" \
 	-o "$(OUTPUTDIR)/thesis.pdf" \
 	-H "$(STYLEDIR)/preamble.tex" \
 	--template="$(STYLEDIR)/template.tex" \
@@ -41,7 +41,8 @@ pdf:
 	-V documentclass:report \
 	-N \
 	--latex-engine=xelatex \
-	--verbose
+	 2>pandoc.log
+#	--verbose
 
 tex:
 	pandoc "$(INPUTDIR)"/*.md \
