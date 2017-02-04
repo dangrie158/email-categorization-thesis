@@ -27,8 +27,8 @@ help:
 
 pdf:
 	pandoc "$(INPUTDIR)"/*.md \
-	--filter pandoc-fignos \
 	--filter pandoc-shortcaption \
+	--filter pandoc-crossref \
 	--filter pandoc-citeproc \
 	--bibliography="$(BIBFILE)" \
 	-o "$(OUTPUTDIR)/thesis.pdf" \
@@ -52,8 +52,8 @@ tex:
 	-V papersize=a4paper \
 	-V documentclass:report \
 	-N \
-	--filter pandoc-fignos \
 	--filter pandoc-shortcaption \
+	--filter pandoc-crossref \
 	--filter pandoc-citeproc \
 	--bibliography="$(BIBFILE)" \
 	--csl="$(STYLEDIR)/ref_format.csl"
