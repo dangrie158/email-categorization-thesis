@@ -34,13 +34,13 @@ pdf:
 	-o "$(OUTPUTDIR)/thesis.pdf" \
 	-H "$(STYLEDIR)/preamble.tex" \
 	--template="$(STYLEDIR)/template.tex" \
-	--csl="$(STYLEDIR)/ref_format.csl" \
 	--highlight-style pygments \
 	-V fontsize=12pt \
 	-V papersize=a4paper \
 	-V documentclass:report \
 	-N \
 	--latex-engine=xelatex \
+	--csl="$(STYLEDIR)/ref_format.csl" \
 	 2>pandoc.log
 #	--verbose
 

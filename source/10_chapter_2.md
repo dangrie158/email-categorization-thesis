@@ -15,7 +15,7 @@ This section provides an overview over the technologies and algorithms used to i
 Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by [@mikolov2013efficient].
 Classical NLP models often use simple bag of words (BOW) approaches to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric ids (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore an algorithm using one of these representations cannot take advantage from this knowledge unless it learns them as part of the training, which requires more training data.
 
-Word2vec however tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm therefore tries to learn dense vectors that have a high (cosine-) similarity for words that cooccure often and a low similarity for words that do not occur in the same context.
+Word2vec however tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000 @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm therefore tries to learn dense vectors that have a high (cosine-) similarity for words that cooccure often and a low similarity for words that do not occur in the same context.
 
 Word2Vec uses a *predictive method* that tries to directly predict a word using it's context as an input. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the cooccurence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This allows to use any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations\footnote{good vector representation of words will have a small distance for words with a similar meaning and big distances for words with different meanings}, a big corpus is needed. This is due to the fact that the distributional hypothesis is a statistical model which profits from a big corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a google news corpus.
 
@@ -33,7 +33,7 @@ In contrast to the CBOW approach, the skip-gram architecture tries to predict th
 
 On the Google Code page for the word2vec project\footnote{https://code.google.com/archive/p/word2vec/} the authors state that CBOW is the faster algorithm whereas skip-gram provides a better performance for infrequent words. Since in this thesis only models are used that use the CBOW architecture, the following section will explain how the vector representations are learned in this configuration.
 
-The model that will be learned to optimize the CBOW objective is a neural net with one, fully connected, hidden layer. The input and output layer have the same dimensionality $v$ which is equal to the size of the vocabulary $V$. The hidden layer has dimensionality $k$ which equals the dimensionality of the vector space where the words will be embedded. Since the layers are fully connected the weights of the connections between each layer can be represented in a matrix ${Wi}_{v\times k}$ for the connection between input and hidden layer or ${Wo}_{k\times v}$ for the connections from the hidden to the output layer respectively.
+The model that will be learned to optimize the CBOW objective is a shallow neural network with one, fully connected, hidden layer. The input and output layer have the same dimensionality $v$ which is equal to the size of the vocabulary $V$. The hidden layer has dimensionality $k$ which equals the dimensionality of the vector space where the words will be embedded. Since the layers are fully connected, the weights of the connections between each layer can be represented in a matrix ${Wi}_{v\times k}$ for the connection between input- and hidden layer or ${Wo}_{k\times v}$ for the connections from the hidden- to the output layer respectively.
 
 ![The structure of a neural net with a CBOW architecture](source/figures/cbow-nn.pdf "detail view of CBOW net"){#fig:cbowdetail}
 
@@ -43,18 +43,74 @@ As shown in [Figure @fig:cbow] above, to train the the word ${w}_{t} \in V$ the 
 
 (@meancontext) $$ \vec { { c }_{ { w }_{ t } } } =\frac { 1 }{ 2C } \sum _{ w\in { c }_{ { w }_{ t } } }^{  }{ w }  $$
 
-The hidden layer has a simple, linear activation function ($f(x) = x$). Therefore the output of the hidden layer is simply the result of multiplying the input vector $\vec { { c }_{ { w }_{ t } } }$ with the weight matrix $Wi$.
+The hidden layer has a simple, linear activation function (${f}_{i}(x) = x$). Therefore the output of the hidden layer is simply the result of multiplying the input vector $\vec { { c }_{ { w }_{ t } } }$ with the weight matrix $Wi$
 
-(@hiddenlayercalc) $$ {\vec{h} = \vec { { c }_{ { w }_{ t } } } \times Wi = \frac { 1 }{ 2C }  \sum _{ w\in { c }_{ { w }_{ t } } }^{  }{ { Wi }_{ w } }}^{T}$$
+(@hiddenlayercalc) $${ \vec { h } =\vec { { c }_{ { w }_{ t } } } \times Wi=\frac { 1 }{ 2C } \sum _{ j=0 }^{ 2C }{ { Wi }_{ j } }  }^{ T }$$
 
-Since the rows of the input matrix correspond to the words in the vocabulary this multiplication can be implemented very efficiently by summing up the rows of the matrix where the input vector has a non-zero value and transpose the result (@hiddenlayercalc). In case of mean-averaged input vectors the result also needs to be divided by the context size.
+where ${ Wi }_{ j }$ is the $j$-th row of $Wi$.
 
+Since the rows of the input matrix correspond to the words in the vocabulary this multiplication can be implemented very efficiently by summing up the rows of the matrix where the input vector has a non-zero value, perform the multiplication and transpose the result (@hiddenlayercalc). In case of mean-averaged input vectors the result also needs to be divided by the context size.
 
-### other parameters / optimization techniques
-- window
-- subsamping (like presented in @mikolov2013distributed)
-- negative sampling
-- hierarchical softmax
+To calculate the state of the output layer $\vec{o}$, the current state of the hidden layer $\vec{h}$ needs to be multiplied by the output weight-matrix $Wo$. Since the CBOW objective is to learn the neural network in a way that maximizes the probability to generate the output word given a set of input words, the output layer uses a softmax activation function (@softmax) to output probabilities for each neuron that will sum up to one. (@outputlayercalc) shows the formula to calculate the probability for word $x$ to be generated with the current hidden layer state $\vec{h}$ where ${Wo}_{i}$ is the i-th column of matrix $Wo$.
+
+(@softmax) $${ softmax(x) }_{ j }=\frac { exp({ x }_{ j }) }{ \sum _{ i=1 }^{ K }{ exp({ x }_{ i }) }  } \quad for \quad j=\{ 1, \dots ,  K \}$$
+
+(@outputlayercalc) $$ p({ w }_{ t }|{ c }_{ { w }_{ t } }) = \frac { exp(\vec { h } \cdot { Wo }_{ x }) }{ \sum _{ i=0 }^{ V }{ exp({ \vec { h } \cdot { Wo }_{ i } } ) }  } $$
+
+With formula (@outputlayercalc) the CBOW objective and the loss function can be expressed as follows:
+
+(@cbowobjective) $$\underset { Wi,Wo }{ argmax }\ log(p({ w }_{ t }|{ c }_{ { w }_{ t } }))$$
+
+(@lossfunction) $$
+\begin{aligned}
+L(Wi,Wo)
+&=-({ w }_{ t }-\sum _{ { w }_{ n }\in V\setminus { w }_{ t } }^{  }{ p({ w }_{ n }|{ c }_{ { w }_{ t } }) } ) \\
+&=-(1-p({ w }_{ t }|{ c }_{ { w }_{ t } }))
+\end{aligned}
+$$
+
+Using this loss function, the model can be trained with any back-propagating loss optimization strategy (e.g. Stochastic Gradient Descent, Adam or AdaGrad).
+
+### word2vec Optimizations and Parameters
+
+#### Hierarchical Softmax
+
+A word2vec model, like most machine learning algorithms, profits from a large trainingset. It also can only embed words in the vector space that are present in the vocabulary. Therefore, the weight matrices $Wi$ and $Wo$ can get large, because for both the size of the vocabulary dictates the size of one dimension.
+
+As stated earlier, the computation of the hidden layer state $\vec{h}$ can be implemented very efficiently by directly summing the rows of the weight matrix $Wi$ (@hiddenlayercalc). However, the calculation of the output vector $\vec{o}$ with the naive approach in (@outputlayercalc) requires the computation of the whole matrix multiplication to calculate the denominator in the softmax activation function.
+
+To overcome this issue, the hierarchical version of the softmax function (@morin2005hierarchical and @mnih2009scalable) can be used (@mikolov2013efficient). Hierarchical softmax uses a binary-tree (more specifically a huffman-tree to get an optimal prefix coding for more frequent tokens) where every token, in this case every word in the vocabulary, is a leaf of the tree ([Figure @fig:bintree]). In a balanced binary-tree, the depth of each leave is limited to $\left\lceil {log}_{2}(N)\right\rceil$ where $N$ is the number of leaves. Since a huffman-tree optimizes the depth of its leaves by their frequency, the average depth is also limited to this value.
+
+![An example binary-tree for a vocabulary with $V$ words. ${w}_{v}$ represent the words in the vocabulary  ([@rong2014word2vec])](source/figures/binary-tree.pdf "Binary-tree for a vocabulary"){#fig:bintree}
+
+The hierarchical softmax approach now uses each brach of the tree as normalized probability. The final probability for the leaf $l$ is calculated by multiplying each brach on the path from the root of the tree to the leave. The Paper @mnih2009scalable formulates this strategy as follows:
+
+> This setup replaces one $N$-way choice by a sequence of $O(log N)$ binary choices.
+
+Therefore, the computation of the loss function decreases in its complexity exponentially.
+
+@mikolov2013distributed gives the updated formula to calculate the probability of word ${w}_{t}$ being produced by the context ${c}_{{w}_{t}}$:
+
+(@hierarchicalsoftmax) $$ p({ w }_{ t }|{ c }_{ { w }_{ t } })=\prod _{ j=1 }^{ L({ w }_{ t })-1 }{ \sigma (\llbracket  n(w,j+1)=ch(n(w,j)) \rrbracket  \cdot { { v' }_{ n(w,j) } }^{ T }) } $$
+
+in which you can see the continuous product of the inner term over the $L({w}_{t})-1$ nodes that are traversed to the leave that represents the word ${w}_{t}$. ${ { v' }_{ n(w,j) } }^{ T }\vec { h }$ is the product of the current node with the output of the hidden layer and $\sigma$ is the softmax function. $\llbracket \cdot \rrbracket$ is a special function which returns $1$ if the inner term is true and $-1$ otherwise. $n(w,j)$ returns the $j$-th node on the path to $w$ and $ch(n)$ returns a fixed but arbitrary child node of $n$ (e.g. always the left branch).
+
+@rong2014word2vec and @yinhierarchical go into great detail on how this formula can be interpreted and how it can be used during the learn phase of the model.
+
+### Subsampling
+
+In a big corpus there will be some phrases (word co-occurences) that occur much more frequent compared to others. As the word vectors for the words in the phrase will change with significantly less with every training step, the model profits less and less from performing a train step on those phrases. Also, in a unprocessed context there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
+
+Therefore @mikolov2013distributed suggest a subsampling of the words in the corpus based on their term frequency. They provide the formula
+
+(@subsamplingformula) $$ P({ w }_{ i })=1-\sqrt { \frac { t }{ f({ w }_{ i }) }  } $$
+
+that calculates the probability for the word ${ w }_{ i }$ to be skipped in this train step. $f(w)$ is the term frequency of word $w$ and $t$ is a threshold which is defined as a hyperparameter of the model. Gensim's implementation of word2vec uses $0.001$ as a default value for $t$.
+
+Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the huffman-tree). Therefore, it can be used as a simple way to scale down the impact of stopwords on the model without the need of a language specific stopword set.
+
+### Negative Sampling
+
 
 ### why word2vec is cool
 - unsupervised learn connectins between words
