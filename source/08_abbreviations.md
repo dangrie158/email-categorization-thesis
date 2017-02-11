@@ -7,6 +7,7 @@
 \textbf{LSI}             \> \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
 \textbf{SVD}             \> \textbf{S}ingle \textbf{V}alue \textbf{D}ecomposition \\  
 \textbf{CBOW}            \> \textbf{C}ontinuous \textbf{BOW} \\  
+\textbf{NCE}             \> \textbf{N}oise \textbf{C}ontrastive \textbf{E}stimation \\  
 \end{tabbing}
 
 \newpage

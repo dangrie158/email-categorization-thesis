@@ -17,7 +17,7 @@ Classical NLP models often use simple bag of words (BOW) approaches to handle wo
 
 Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000 @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
 
-Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations\footnote{good vector representation of words will have a small distance between words with a similar meaning and big distances for words with different meanings}, a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a google news corpus.
+Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations\footnote{good vector representation of words will have a small distance between words with a similar meaning and big distances for words with different meanings}, a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
 
 ### Learning of the Word Embeddings
 
@@ -111,17 +111,14 @@ Subsampling is a cheap operation during learning if the word frequencies are alr
 
 ### Negative Sampling
 
-Another optimization
+Negative sampling is another approximation strategy to avoid the expensive calculation of the softmax activation function. Negative sampling was introduced by @mikolov2013distributed. The idea is based on the noise-contrastive estimation (NCE) by @mnih2013learning. However, while NCE tries to estimate the log-probability $log(p(y|X))$, word2vec only is concerned about learning good vector representations for the words in the vocabulary. The log-probability at the output layer is only used while learning. Therefore, the NCE approximation is further simplified, while the word vectors retain their quality.
+
+The idea of negative sampling is, instead of learning the full probabilistic model by calculating the log-likelihood for every word at the output layer, only $k$ negative samples from the vocabulary are chosen from a random distribution. The negative sampling objective now tries to maximize the probability of the correct sample in contrast to the negative (noise) samples. Therefore there are now only $k$ (non-normalized) calculations in the output layer instead of $V$. @mikolov2013distributed define good values for $k$ from 5 to as high as 20 for small corpora and as low as 2 for large corpora.
 
 ### why word2vec is cool
-- unsupervised learn connectins between words
-- unsupervied learn relations between words (city -> capital like in @mikolov2013distributed)
 
+Word2vec works unsupervised, therefore, large training corpora can easily be found. The algorithm is independent from the language used and in theory should work with any language where the distributional hypothesis holds true. Word2vec learns good word vectors with one of the simple architectures described above. Since the algorithm in its basis is a simple neural net, the algorithm can benefit from further research in this area, e.g. new optimizing methods. The simple architecture also results in a quicker learning time compared to other models (@mikolov2013distributed).
 
-- wordembeddings to learn beziehungen zwischen wörtern
-
-
-## SVD
-used many times (successfully) in NLP categorization tasks (ref to chap. 5 with results (SVD TF-IDF second best))
+However, vectors learned by word2vec also have another interesting property. They automatically learn representations between words that can be expressed as linear operations in the vector space. An often cited example for this property comes from @mikolov2013efficient. They use the word vectors from their Google News corpus and show that the result of the linear combination ```w['Paris'] - w['France'] + w['Italy']``` is closest to the vector for the word ```w['Rome']```. They also show the result of other relationships, for example adjective $\rightarrow$ comparative and company name $\rightarrow$ CEO surname.
 
 ## Latent Ditrichlet Allocation
