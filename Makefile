@@ -27,6 +27,7 @@ help:
 
 pdf:
 	pandoc "$(INPUTDIR)"/*.md \
+	"$(INPUTDIR)"/metadata.yml \
 	--filter pandoc-shortcaption \
 	--filter pandoc-crossref \
 	--filter pandoc-citeproc \
@@ -46,6 +47,7 @@ pdf:
 
 tex:
 	pandoc "$(INPUTDIR)"/*.md \
+	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.tex" \
 	-H "$(STYLEDIR)/preamble.tex" \
 	-V fontsize=12pt \
@@ -60,6 +62,7 @@ tex:
 
 docx:
 	pandoc "$(INPUTDIR)"/*.md \
+	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.docx" \
 	--bibliography="$(BIBFILE)" \
 	--filter pandoc-fignos \
@@ -68,6 +71,7 @@ docx:
 
 html:
 	pandoc "$(INPUTDIR)"/*.md \
+	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.html" \
 	--standalone \
 	--filter pandoc-fignos \
