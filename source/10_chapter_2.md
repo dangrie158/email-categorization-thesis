@@ -117,21 +117,21 @@ The idea of negative sampling is, instead of learning the full probabilistic mod
 
 ### Interesting Properties of the word2vec Model
 
-Word2vec works unsupervised, therefore, large training corpora can easily be found. The algorithm is independent from the language used and in theory should work with any language where the distributional hypothesis holds true. Word2vec learns good word vectors with one of the simple architectures described above. Since the algorithm in its basis is a simple neural net, the algorithm can benefit from further research in this area, e.g. new optimizing methods. The simple architecture also results in a quicker learning time compared to other models (@mikolov2013distributed).
+Word2vec works unsupervised. Therefore, large training corpora can easily be found. The algorithm is independent of the language used and in theory should work with any language where the distributional hypothesis holds true. Word2vec learns good word vectors with one of the simple architectures described above. Since the algorithm in its basis is a simple neural net, the algorithm can benefit from further research in this area, e.g. new optimizing methods. The simple architecture also results in a quicker learning time compared to other models (@mikolov2013distributed).
 
-However, vectors learned by word2vec also have another interesting property. They automatically learn representations between words that can be expressed as linear operations in the vector space. An often cited example for this property comes from @mikolov2013efficient. They use the word vectors from their Google News corpus and show that the result of the linear combination ```w['Paris'] - w['France'] + w['Italy']``` is closest to the vector for the word ```w['Rome']```. They also show the result of other relationships, for example adjective $\rightarrow$ comparative and company name $\rightarrow$ CEO surname.
+However, vectors learned by word2vec also have another interesting property. They automatically learn representations between words that can be expressed as linear operations in the vector space. An often cited example for this property comes from @mikolov2013efficient. They use the word vectors from their Google News corpus and show that the result of the linear combination ```w['Paris'] - w['France'] + w['Italy']``` is closest to the vector for the word ```w['Rome']```. They also show the result of other relationships, for example, adjective $\rightarrow$ comparative and company name $\rightarrow$ CEO surname.
 
 ## Latent Dirichlet Allocation
 
-Latent dirichlet allocation (LDA) is a generative model used for topic modeling described by @blei2002latent. The algorithm performs a compression on a corpus by describing each document $w$ by a mixture of $K$ topics $z_1, z_2, \dots , z_K$ where $K$ is a hyperparameter of the model.
+Latent Dirichlet allocation (LDA) is a generative model used for topic modeling described by @blei2002latent. The algorithm performs a compression on a corpus by describing each document $w$ by a mixture of $K$ topics $z_1, z_2, \dots , z_K$ where $K$ is a hyperparameter of the model.
 
-LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more preciceley the probabilistic variant PLSI (@hofmann1999probabilistic).
+LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more precisely the probabilistic variant PLSI (@hofmann1999probabilistic).
 
 LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$ $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation @plsi-mixture that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
 
 (@plsi-mixture) $$p(w,d)=\sum_{ z \in Z }^{  }{ p(z)p(d|z)p(w|z) } $$
 
-However, while PLSI is a generative model for the corpus it is learned on, the documents used for learning are only treated as a set of individual labels. Therefore the PLSI model can't directly be used to create probabilities for new documents (@blei2002latent).
+However, while PLSI is a generative model for the corpus it is learned on, the documents used for learning are only treated as a set of individual labels. Therefore the PLSI model cannot directly be used to create probabilities for new documents (@blei2002latent).
 
 The LDA model, in contrast, is a fully generative model. Therefore the model can describe how a new document $d$ is generated from the model by the following process.
 
@@ -149,7 +149,7 @@ In the formal plate notation the generating process with $D$ documents, each con
 
 ### Learning
 
-The only observable entity in [figure @fig:ldaplate] are the words ${w}_{d,n}$ of the documents. To find the latent topics $z$, the objective while learning a LDA model is to find the parameters $\theta$ and $\beta$ for the distributions, so that the model has a high probability to generate the documents in the training set. Therefore the posterior probability needs to be estimated, given the dirichlet priors and the likelihood based on the observations of words (@lda-posterior) which can be represented as the joint probability in ((@lda-joint) based on @darling2011theoretical).
+The only observable entity in [figure @fig:ldaplate] are the words ${w}_{d,n}$ of the documents. To find the latent topics $z$, the objective while learning an LDA model is to determine the parameters $\theta$ and $\beta$ for the distributions so that the model has a high probability to generate the documents in the training set. Therefore the posterior probability needs to be estimated, given the Dirichlet priors and the likelihood based on the observations of words (@lda-posterior) which can be represented as the joint probability in ((@lda-joint) based on @darling2011theoretical).
 
 (@lda-posterior) $$p(w,z,\beta ,\theta | \alpha ,\eta )$$
 (@lda-joint) $$\prod _{ K }^{  }{ p(\beta_k|\eta) } \prod _{ D }^{  }{ p(\theta_d|\alpha) }\prod _{ N }^{  }{ p(z_{d,n}|\theta_d) p(w_{d,n}|\beta_{z_{d,n}}) }$$
