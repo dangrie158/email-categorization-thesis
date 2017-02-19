@@ -9,6 +9,10 @@ For the above reasons, a way to automatically sort incoming Mail is desired. Thi
 Schreiben wenn fertig
 dass / warum news verwendet wurden
 
+- sarah palin emails
+- enron corpus
+
+
 validation der ansätze mit newsgroups
 validation der daten mit eigenem email datensatz (weil mehr "real life" datensatz (spam, verschiedene vormate e.g. tofu))
 

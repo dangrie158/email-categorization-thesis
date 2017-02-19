@@ -115,10 +115,53 @@ Negative sampling is another approximation strategy to avoid the expensive calcu
 
 The idea of negative sampling is, instead of learning the full probabilistic model by calculating the log-likelihood for every word at the output layer, only $k$ negative samples from the vocabulary are chosen from a random distribution. The negative sampling objective now tries to maximize the probability of the correct sample in contrast to the negative (noise) samples. Therefore there are now only $k$ (non-normalized) calculations in the output layer instead of $V$. @mikolov2013distributed define good values for $k$ from 5 to as high as 20 for small corpora and as low as 2 for large corpora.
 
-### why word2vec is cool
+### Interesting Properties of the word2vec Model
 
 Word2vec works unsupervised, therefore, large training corpora can easily be found. The algorithm is independent from the language used and in theory should work with any language where the distributional hypothesis holds true. Word2vec learns good word vectors with one of the simple architectures described above. Since the algorithm in its basis is a simple neural net, the algorithm can benefit from further research in this area, e.g. new optimizing methods. The simple architecture also results in a quicker learning time compared to other models (@mikolov2013distributed).
 
 However, vectors learned by word2vec also have another interesting property. They automatically learn representations between words that can be expressed as linear operations in the vector space. An often cited example for this property comes from @mikolov2013efficient. They use the word vectors from their Google News corpus and show that the result of the linear combination ```w['Paris'] - w['France'] + w['Italy']``` is closest to the vector for the word ```w['Rome']```. They also show the result of other relationships, for example adjective $\rightarrow$ comparative and company name $\rightarrow$ CEO surname.
 
-## Latent Ditrichlet Allocation
+## Latent Dirichlet Allocation
+
+Latent dirichlet allocation (LDA) is a generative model used for topic modeling described by @blei2002latent. The algorithm performs a compression on a corpus by describing each document $w$ by a mixture of $K$ topics $z_1, z_2, \dots , z_K$ where $K$ is a hyperparameter of the model.
+
+LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more preciceley the probabilistic variant PLSI (@hofmann1999probabilistic).
+
+LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$ $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation @plsi-mixture that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
+
+(@plsi-mixture) $$p(w,d)=\sum_{ z \in Z }^{  }{ p(z)p(d|z)p(w|z) } $$
+
+However, while PLSI is a generative model for the corpus it is learned on, the documents used for learning are only treated as a set of individual labels. Therefore the PLSI model can't directly be used to create probabilities for new documents (@blei2002latent).
+
+The LDA model, in contrast, is a fully generative model. Therefore the model can describe how a new document $d$ is generated from the model by the following process.
+
+1. Draw a set of $k$ multinomial distributions from a dirichlet distribution ${\beta}_{k} \sim Dir(\eta )$
+2. Draw the mixture of topics as a multinomial distribution for the document ${\theta}_{d}$ from a dirichlet distribution ${\theta}_{d} \sim Dir(\alpha )$
+3. For every word in the document ${w}_{d,n}$
+    1. Select a topic ${z}_{d,n}$ from the multinomial distribution of topics in the document ${\theta}_{d}$
+    2. Select a word ${w}_{d,n}$ from the multinomial distribution ${\beta}_{{z}_{d,n}}$ in the topic ${z}_{d,n}$
+
+Note that LDA uses a bag of words assumption for the documents, so the order of the generated words does not matter.
+
+In the formal plate notation the generating process with $D$ documents, each containing $N$ words can be described by [figure @fig:ldaplate] where each plate is the repeated draw of a value from the distribution.
+
+![Plate notation of the LDA generative process. Based on {@wayneldatut}](source/figures/lda-plate.pdf "Plate notation of the LDA generative process"){#fig:ldaplate}
+
+### Learning
+
+The only observable entity in [figure @fig:ldaplate] are the words ${w}_{d,n}$ of the documents. To find the latent topics $z$, the objective while learning a LDA model is to find the parameters $\theta$ and $\beta$ for the distributions, so that the model has a high probability to generate the documents in the training set. Therefore the posterior probability needs to be estimated, given the dirichlet priors and the likelihood based on the observations of words (@lda-posterior) which can be represented as the joint probability in ((@lda-joint) based on @darling2011theoretical).
+
+(@lda-posterior) $$p(w,z,\beta ,\theta | \alpha ,\eta )$$
+(@lda-joint) $$\prod _{ K }^{  }{ p(\beta_k|\eta) } \prod _{ D }^{  }{ p(\theta_d|\alpha) }\prod _{ N }^{  }{ p(z_{d,n}|\theta_d) p(w_{d,n}|\beta_{z_{d,n}}) }$$
+
+One way to find the latent variables for the posterior probability is by using Gibbs sampling which is a Markov chain Monte Carlo algorithm (MCMC) (@geman1984stochastic).
+
+@darling2011theoretical goes into great detail on how the posterior distribution can be inferred using Gibbs sampling. However, the practical algorithm follows the following scheme:
+
+1. Assign each word ${w}_{d,n}$ with a randomly choosen topic $z \in \{ 1, \dots , K \}$
+2. For each word ${w}_{d,n}$ document $d$ in the corpus:
+    1. Calculate $p(z|d)$, the percentage of words from $d$ which are already assigned to $z$
+    2. Calculate $p(w_{d,n}|z)$, the proportion of how often $w_{d,n}$ already appears in $z$
+    3. Reassign the word to the topic $z$ where $\underset { z }{ argmax } (p(z|d)p(w_{d,n}|z))$
+
+This process can be repeated for several epochs.

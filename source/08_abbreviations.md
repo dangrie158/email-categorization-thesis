@@ -8,6 +8,12 @@
 \textbf{SVD}             \> \textbf{S}ingle \textbf{V}alue \textbf{D}ecomposition \\  
 \textbf{CBOW}            \> \textbf{C}ontinuous \textbf{BOW} \\  
 \textbf{NCE}             \> \textbf{N}oise \textbf{C}ontrastive \textbf{E}stimation \\  
+\textbf{LDA}             \> \textbf{L}atent \textbf{D}irichlet \textbf{A}llocation \\  
+\textbf{LSI}             \> \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
+\textbf{PLSI}             \> \textbf{P}robabilistic \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
+\textbf{TF-IDF}             \> \textbf{T}erm \textbf{F}requency  \textbf{- I}nverse  \textbf{D}ocument \textbf{F}requency \\  
+\textbf{SVD}             \> \textbf{S}ingular \textbf{V}alue \textbf{D}ecomposition \\  
+\textbf{MCMC}             \> \textbf{M}arcov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\  
 \end{tabbing}
 
 \newpage
