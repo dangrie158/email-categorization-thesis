@@ -4,13 +4,18 @@ The way we use modern technology to communicate is still under ongoing developme
 
 For the above reasons, a way to automatically sort incoming Mail is desired. This thesis will elaborate methods to allow sorting incoming mail automatically into different categories. Since many users that would profit from such a system already manually sort their emails into different folders, the current inbox emails can be used as a training set with the folder being the target label. However, to allow the sorting of inboxes that are only partially sorted or not yet sorted at all, methods to allow sorting of big, unlabeled corpora using minimal manual labor and unsupervised Natural Language Processing (NLP) algorithms will be presented and evaluated.
 
-## Approach
+## Approach {#sec:approach}
 
 Schreiben wenn fertig
 dass / warum news verwendet wurden
 
 - sarah palin emails
 - enron corpus
+
+- was nicht gemacht wird
+  - metadaten
+  - threads
+  -
 
 
 validation der ansätze mit newsgroups
@@ -27,3 +32,4 @@ Due to the lack of a readily available, tagged E-Mail corpus with mixed content 
 
 - vielleicht gensim extension für part models
 - corpus mit xxxk news artikeln
+- shown that newsarticles are a substitute to mails

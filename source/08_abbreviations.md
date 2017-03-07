@@ -14,6 +14,9 @@
 \textbf{TF-IDF}             \> \textbf{T}erm \textbf{F}requency  \textbf{- I}nverse  \textbf{D}ocument \textbf{F}requency \\  
 \textbf{SVD}             \> \textbf{S}ingular \textbf{V}alue \textbf{D}ecomposition \\  
 \textbf{MCMC}             \> \textbf{M}arcov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\  
+\textbf{RSS}             \> \textbf{R}ich \textbf{S}ite \textbf{S}ummary \\  
+\textbf{SVM}             \> \textbf{S}upport \textbf{V}ector \textbf{M}achine \\  
+\textbf{URL}             \> \textbf{U}niform \textbf{R}esource \textbf{L}ocator \\  
 \end{tabbing}
 
 \newpage

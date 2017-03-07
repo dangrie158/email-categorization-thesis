@@ -17,7 +17,9 @@ Classical NLP models often use simple bag of words (BOW) approaches to handle wo
 
 Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000 @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
 
-Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations\footnote{good vector representation of words will have a small distance between words with a similar meaning and big distances for words with different meanings}, a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
+Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
+
+[^1]: good vector representation of words will have a small distance between words with a similar meaning and big distances for words with different meanings
 
 ### Learning of the Word Embeddings
 
@@ -31,7 +33,7 @@ In contrast to the CBOW approach, the skip-gram architecture tries to predict th
 
 ![Skip-gram architecture with a context window of 4 words](source/figures/skipgram-aritechture.pdf "skipgram architecture"){#fig:skipgram}
 
-On the Google Code page for the word2vec project\footnote{https://code.google.com/archive/p/word2vec/} the authors state that CBOW is the faster algorithm whereas skip-gram provides better performance for infrequent words. Since in this thesis only models are used that use the CBOW architecture, the following section will explain how the vector representations are learned in this configuration.
+On the Google Code page for the word2vec project[^2] the authors state that CBOW is the faster algorithm whereas skip-gram provides better performance for infrequent words. Since in this thesis only models are used that use the CBOW architecture, the following section will explain how the vector representations are learned in this configuration.
 
 The model that will be learned to optimize the CBOW objective is a shallow neural network with one, fully connected, hidden layer. The input and output layer have the same dimensionality $v$ which is equal to the size of the vocabulary $V$. The hidden layer has dimensionality $k$ which equals the dimensionality of the vector space where the words will be embedded. Since the layers are fully connected, the weights between the layers can be represented by a matrix ${Wi}_{v\times k}$ for the connection between input- and the hidden layer or ${Wo}_{k\times v}$ for the links from the hidden- to the output layer respectively.
 
@@ -70,6 +72,8 @@ L(Wi,Wo)
 $$
 
 Using this loss function, the model can be trained with any back-propagating loss optimization strategy (e.g. Stochastic Gradient Descent, Adam or AdaGrad).
+
+[^2]: https://code.google.com/archive/p/word2vec/
 
 ### word2vec Optimizations and Parameters
 
@@ -127,7 +131,7 @@ Latent Dirichlet allocation (LDA) is a generative model used for topic modeling 
 
 LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more precisely the probabilistic variant PLSI (@hofmann1999probabilistic).
 
-LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$ $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation @plsi-mixture that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
+LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$ $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation (@plsi-mixture) that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
 
 (@plsi-mixture) $$p(w,d)=\sum_{ z \in Z }^{  }{ p(z)p(d|z)p(w|z) } $$
 

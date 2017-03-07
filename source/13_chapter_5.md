@@ -50,3 +50,8 @@ speed / mem consumption: auch wenn initiales lernen ein "einmaliger" task ist is
 
 experiment:
 learn authors -> category and test result (are the authors really in this category)
+
+## Naiver Bayes auf LDA
+
+
+## random Indexing
