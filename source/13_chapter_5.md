@@ -1,4 +1,3 @@
-
 # News Classification
 
 ## word2vec ansatz mit basemodel

@@ -10,7 +10,7 @@ mention von sasha can's paper
 
 This section provides an overview over the technologies and algorithms used to implement and validate the classifiers presented in the next section.
 
-## Word2Vec
+## Word2Vec {#sec:word2vec}
 
 Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by [@mikolov2013efficient].
 Classical NLP models often use simple bag of words (BOW) approaches to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.

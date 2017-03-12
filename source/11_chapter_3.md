@@ -21,7 +21,7 @@ Since no empirical data could be found about whether or not news articles have t
 
 This section describes properties of the used news corpus and how it was build.
 
-The corpus was build from the 21st of November 2016 to 23rd of February 2017. It consists of 75,848 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 10,000 words. However, it still represents over 97.6% of all articles.
+The corpus was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 10,000 words. However, it still represents over 97.6% of all articles.
 
 ![Growth of the corpus size over time](source/figures/corpus_size.pdf "Corpus growth"){#fig:corpuscount}
 
@@ -66,6 +66,8 @@ Luckily it was observed that all used news sites use URLs that represent the int
 
 While this approach requires manual work every time one of the sites changes their URL scheme or adds a new topic, during the collection of the corpus only one news site changed the URL scheme (the IT-News portal golem disabled access via unencrypted HTTP connections) and 11 new topics were added in total, most of which were special topics that were mapped to the *Ignore* category.
 
+[Table @tbl:categories-count] shows the number of articles in each category.
+
 | Label         | English Meaning   | Example Subtopics                                      |
 |---------------|-------------------|--------------------------------------------------------|
 | Politik       | domestic politics | ```politik_deutschland```, ```innenpolitik```          |
@@ -83,6 +85,22 @@ While this approach requires manual work every time one of the sites changes the
 
 Table: The categories used as Labels  {#tbl:categories}
 
+| Label         |    articles   |
+|---------------|---------------|
+| Politik       |         14132 |
+| Ausland       |          4191 |
+| Aktuell       |           200 |
+| Technologie   |          3726 |
+| Kultur        |          2247 |
+| Wirtschaft    |          8593 |
+| Finanzen      |          2538 |
+| Sport         |          4418 |
+| Sonstiges     |          8094 |
+| Lokal         |          2700 |
+| Lifestyle     |          3305 |
+| *Ignore*      |           574 |
+
+Table: Number of articles in each category  {#tbl:categories-count}
 
 ## Article normalization
 
@@ -102,3 +120,33 @@ For normalizing and tokenizing the news article texts, the *normalizr* package[^
 
 [^normalizr]: https://github.com/davidmogar/normalizr
 [^phrases]: https://radimrehurek.com/gensim/models/phrases.html
+
+## The Wikipedia Corpus
+
+The word2vec model presented in [Chapter @sec:word2vec] tries to learn good word representations by leveraging the distributional hypothesis ans word co-occurrences. Previously unseen words, however, get initialized with a random vector that is then adjusted by the learning algorithm. This process yields vectors that are mainly based on their random initial state for words that occur only a few times in the corpus. For this reason, gensim's word2vec implementation offers the ```min_count``` parameter with a default value of 5. The parameter specifies a lower bound to how often a word needs to be observed in the corpus. Words which appear more infrequent are not learned by the model. This offers an easy way to make sure, the vectors learned by the model are not mostly based on a random state, but are adjusted by a minimum number of training steps.
+
+However, due to the relatively low corpus size (13,233,740 words after stopword filtering[^stopword-filtering] with 377,998 unique tokens, only 108,900 of which appear more than 5 times), using this lower bound, the news corpus could only be used to learn vector representations for ~29% of the words that appear in the corpus. [Figure @fig:wordfrequencies] shows a histogram of the word frequency of each unique word in the corpus.
+
+Since the word2vec model is trained unsupervised, any large collection of text can be used to increase the size of the corpus. If different models need to be learned, it is important that this base corpus contains neutral texts in regard to the difference of the models learned.
+For example, if the objective is to classify text into modern and classic literature, the base corpus should not mainly contain samples of either class (e.g. texts from the Gutenberg Project[^gutenberg]).
+
+For this reason, a dump of the german Wikipedia corpus from 21. October 2017 is used as a base corpus. Since this corpus contains articles over a broad range of topics and is written by a large amount of authors, it matches all criteria for a neutral base corpus. This corpus contains 1,769,502 articles with 834,698,710 words (6,795,065 unique tokens of which 1,862,009 appear more than 5 times).
+
+![Histogram of word frequencies in the news corpus on a log-log scale.](source/figures/word_frequencies.pdf "histogram of word frequencies"){#fig:wordfrequencies}
+
+[^gutenberg]: https://www.gutenberg.org
+[^stopword-filtering]: Using the german stopwordlist of NLTK (http://www.nltk.org)
+
+<!--
+stopwords:
+Total words: 13233740
+Unique words: 377777
+12804395 frequent word occurences
+108900 frequent words
+
+mit stopwords:
+Total words: 22084331
+Unique words: 377998
+21654986 frequent word occurences
+109121 frequent words
+-->
