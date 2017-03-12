@@ -17,6 +17,7 @@
 \textbf{RSS}             \> \textbf{R}ich \textbf{S}ite \textbf{S}ummary \\  
 \textbf{SVM}             \> \textbf{S}upport \textbf{V}ector \textbf{M}achine \\  
 \textbf{URL}             \> \textbf{U}niform \textbf{R}esource \textbf{L}ocator \\  
+\textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor \textbf{E}mbedding \\  
 \end{tabbing}
 
 \newpage

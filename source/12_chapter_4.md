@@ -20,7 +20,7 @@ Since clustering algorithms rely on these vectors to be good representations of 
 
 ### TF and TF-IDF Vectorizers
 
-Among the simple vectorization techniques is the term frequency (TF) vectorizer, which assigns each document a vector $\vec { d } =\{ tf_{d,w1},tf_{d,w2},...,tf_{d,wN}\} $ where $tf_{d,wn}$ is the term frequency of the word $wn$ in the document for each of the $N$ words in the vocabulary. A simple extension of the TF vectorizer is the TF-IDF vectorizer, where each $tf_{d,wn}$ term is replaced by the TF-IDF of the word $tf-idf_{d,wn}$.
+Among the simple vectorization techniques is the term frequency (TF) vectorizer, which assigns each document a vector $\vec { d } =\{ tf_{d,w1},tf_{d,w2},...,tf_{d,wN} \}$ where $tf_{d,wn}$ is the term frequency of the word $wn$ in the document for each of the $N$ words in the vocabulary. A simple extension of the TF vectorizer is the TF-IDF vectorizer, where each $tf_{d,wn}$ term is replaced by the TF-IDF of the word $tf-idf_{d,wn}$.
 
 Since both, the TF and TF-IDF vectorizer, do not order the words according to their appearance in the vectorized document, they both represent the document as a bag of words.
 
@@ -44,6 +44,13 @@ A more sophisticated approach to generate document vectors from word2vec's word 
 
 ### Data visualization
 
+Visualizing the output of the vectorization can be a helpful way to determine the quality of the produced vectors. For a quick overview of where the document vectors point to in their embedding vector space and which vectors are neighbours to each other, a two-dimensional representation that can easily be visualized is desirable. However, this requires a dimensionality reduction from the high-dimensional representation vector space to a low dimensional visualization vector space. This dimensionality reduction needs to preserve the general structure of the high-dimensional vectors in their low-dimensional representatives.
+
+One technique that is specifically developed for visualizations of high-dimensional data is *t-Distributed Stochastic Neighbor Embedding* (t-SNE) (@maaten2008visualizing). It provides state-of-the-art, structure-preserving dimensionality reduction and is highly scalable.
+
+[Figure @fig:tsne] shows a visualization of the resulting document vectors using the vectorization techniques described before and a t-SNE dimensionality reduction on the news corpus presented in [chapter @sec:newscorpus]. As one can see, even in the low-dimensional representation shows some correlation between the classes of neighbouring elements which justifies the examination of the quality of clustering algorithms on these vectors.
+
+![Visualization of document vectors created using different vectorization techniques followed by a t-SNE dimensionality reduction. Vectorizers from left to right: TF-IDF, vectors created by the summation of word2vec vectors, Paragraph Vectors](source/figures/word_frequencies.pdf "visualization of document vectors"){#fig:tsne}
 
 ## Grouping
 

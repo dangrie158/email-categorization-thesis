@@ -1,4 +1,4 @@
-# Development and Validation Data Sets
+# Development and Validation Data Sets {#sec:newscorpus}
 
 As noted in [Chapter @sec:approach], the approaches in the next chapter are developed and evaluated on a corpus consisting of german news articles rather than a email corpus. This decision is justified by the fact that no suitable email corpus for development could be found.
 
