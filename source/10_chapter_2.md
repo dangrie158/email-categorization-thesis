@@ -125,7 +125,7 @@ Word2vec works unsupervised. Therefore, large training corpora can easily be fou
 
 However, vectors learned by word2vec also have another interesting property. They automatically learn representations between words that can be expressed as linear operations in the vector space. An often cited example for this property comes from @mikolov2013efficient. They use the word vectors from their Google News corpus and show that the result of the linear combination ```w['Paris'] - w['France'] + w['Italy']``` is closest to the vector for the word ```w['Rome']```. They also show the result of other relationships, for example, adjective $\rightarrow$ comparative and company name $\rightarrow$ CEO surname.
 
-## Latent Dirichlet Allocation
+## Latent Dirichlet Allocation {#sec:lda}
 
 Latent Dirichlet allocation (LDA) is a generative model used for topic modeling described by @blei2002latent. The algorithm performs a compression on a corpus by describing each document $w$ by a mixture of $K$ topics $z_1, z_2, \dots , z_K$ where $K$ is a hyperparameter of the model.
 

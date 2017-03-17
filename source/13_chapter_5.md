@@ -1,12 +1,5 @@
 # News Classification
 
-## word2vec ansatz mit basemodel
-warum basemodel:
-  - weil sonst wörter die nicht (oper selten) vorkommen random initialisiert werden
-  - lernen einer normalen sprache
-
-
-## clustering (unsupervised on word2vec model)
 
 ## word2vec log likelyhood
 
