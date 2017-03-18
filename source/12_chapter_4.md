@@ -89,8 +89,7 @@ The bad results for the TF-IDF vectors can be explained by the simplicity of the
 | Birch           |  0.208745672372 |     0.468893870622 |    0.339690047161 |
 | Average Linkage |  0.008964382833 |     0.028169069224 |    0.010947798218 |
 | DBSCAN          |  0.037289272308 |     0.016579591210 |    0.057261994729 |
-
-Table: {#tbl:clustering-results}
+Table: Result of different clustering algorithms on the vectors of the vectorizers {#tbl:clustering-results}
 
 ## LDA Topics
 
@@ -98,7 +97,7 @@ Another possibility for clustering an initial corpus may be the LDA topic model 
 
 For these tests, a topic model with 100 topics was learned on the stopword filtered news corpus using gensims implementation of LDA [^gensim-lda], thus describing each document as a mixture of 100 topics.
 
-These representations of the documents could then be used to assign each document to the topic which has the highest share in the mix of topics. This simple technique already yielded a homogeneity of 0.5413, which is better than any of the clustering techniques.
+These representations of the documents could then be used to assign each document to the topic which has the highest share in the mix of topics. This simple technique already yielded a homogeneity of 0.5013, which is better than any of the clustering techniques.
 
 By calculating the average distance between the topic with the highest share and the second highest share, one could observe that documents which were associated to a class that is a minority in the current cluster, have a lower difference between the first two topics with the biggest shares ([Figure @fig:avg-distance-lda]).
 
@@ -113,6 +112,8 @@ This observation led to the introduction of a *minimum confidence* parameter. Th
 As one can see, the rate growth of the special cluster when increasing the *minimum confidence*  does not justify the small increase in homogeneity.
 
 ![Correlation between average homogeneity and number of unclustered elements. The confidence parameter is varied in the interval (0, 0.035)](source/figures/confidence-parameter.pdf "Effect of the confidence parameter"){#fig:confidence-parameter}
+
+To show the effect of the number of classes in the ground truth, the clustering was repeated using only 4 classes; *Politik*, *Sport*, *Technologie* and *Kultur*. The choice of classes was based on no particular reason, however it may be noteworthy that all are very distinct topics from one another. With only these classes, the homogeneity of the 100 clusters reached 71.46%.
 
 [^gensim-lda]: https://radimrehurek.com/gensim/models/ldamodel.html
 
@@ -129,12 +130,12 @@ The results all show a worse performance regarding the homogeneity of the cluste
 | Birch           |  0.242425781726 |
 | Average Linkage |  0.022816538530 |
 | DBSCAN          |  0.114639442366 |
-
 Table: Homogeneity of the clusters created using LDA as a vectorizer {#tbl:lda-clustering}
 
 ## Conclusion and discussion
 
-While even the best result only yields a homogeneity of the clusters of just above 50%, the experiments showed that the
+The results of the clustering experiment show, that the summation of word vectors yields a good representation for a document. It is also visible that the vectorization using a model which was pre trained on a large corpus to learn peculiarities of the language can generate better vectors with a rather low dimension than classical TF-IDF vectorization which yields high dimensional but sparse vectors.
 
-LDA proved to create meaningful topics
-word2vec sum was not better, however smaller (200 dims instead of vocab size dims)
+The LDA model proved to create meaningful topics, since one could cluster the documents with the best result in all experiments just by using the topic that contributed the most to the document, effectively high-pass filtering the vector elements. However, using the complete, unfiltered vector decreased the performance, probably due to noise introduced by the smaller components in the vector.
+
+The best result was a homogeneity of just over 50% for 100 clusters and 10 classes in the ground truth. By reducing the number of classes to 4 while keeping all other parameters, the homogeneity could reach over 71%. Especially for the categorization into fewer classes, this technique can provide the user with a big reduction in workload when initially sorting a inbox into multiple folders. However, any other algorithm that is trained on a corpus using the labels provided by this technique can, at best, only reach an accuracy equal to the homogeneity.
