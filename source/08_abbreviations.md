@@ -16,8 +16,9 @@
 \textbf{MCMC}             \> \textbf{M}arcov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\  
 \textbf{RSS}             \> \textbf{R}ich \textbf{S}ite \textbf{S}ummary \\  
 \textbf{SVM}             \> \textbf{S}upport \textbf{V}ector \textbf{M}achine \\  
+\textbf{RF}             \> \textbf{R}andom \textbf{F}orest \\  
 \textbf{URL}             \> \textbf{U}niform \textbf{R}esource \textbf{L}ocator \\  
-\textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor \textbf{E}mbedding \\  
+\textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor\\ \textbf{E}mbedding \\  
 \end{tabbing}
 
 \newpage

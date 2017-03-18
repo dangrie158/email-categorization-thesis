@@ -33,13 +33,13 @@ In contrast to the CBOW approach, the skip-gram architecture tries to predict th
 
 ![Skip-gram architecture with a context window of 4 words](source/figures/skipgram-aritechture.pdf "skipgram architecture"){#fig:skipgram}
 
-On the Google Code page for the word2vec project[^2] the authors state that CBOW is the faster algorithm whereas skip-gram provides better performance for infrequent words. Since in this thesis only models are used that use the CBOW architecture, the following section will explain how the vector representations are learned in this configuration.
+On the Google Code page for the word2vec project[^2] the authors state that CBOW is the faster algorithm whereas skip-gram provides better performance for infrequent words. The following section will explain how vector representation can be learned in a CBOW configuration. A model for the skip-gram configuration, however, uses the same basic concepts with some peculiarities for the different objective. <!--Since in this thesis only models are used that use the CBOW architecture, the following section will explain how the vector representations are learned in this configuration.-->
 
 The model that will be learned to optimize the CBOW objective is a shallow neural network with one, fully connected, hidden layer. The input and output layer have the same dimensionality $v$ which is equal to the size of the vocabulary $V$. The hidden layer has dimensionality $k$ which equals the dimensionality of the vector space where the words will be embedded. Since the layers are fully connected, the weights between the layers can be represented by a matrix ${Wi}_{v\times k}$ for the connection between input- and the hidden layer or ${Wo}_{k\times v}$ for the links from the hidden- to the output layer respectively.
 
 ![The structure of a neural net with a CBOW architecture](source/figures/cbow-nn.pdf "detail view of CBOW net"){#fig:cbowdetail}
 
-As shown in [Figure @fig:cbow] above, to train the the word ${w}_{t} \in V$ the context $c_{ { w }_{ t } }=\{ { w }_{ t-s },{ w }_{ t-C-1 },\dots { w }_{ t-1 },{ w }_{ t+1 },\dots ,{ w }_{ t+C }\}$ is considered relevant, where $C$ is half the window size and ${ w }_{ x }$ is the $x$-th word in the (sorted) vocabulary represented as a one-hot vector. To represent the context $c_{ { w }_{ t } }$, the single-hot vectors of each word in the context is either summed up or mean-averaged ((@sumcontext) or (@meancontext) respectively).
+As shown in [Figure @fig:cbow] above, to train the the word ${w}_{t} \in V$ the context $c_{ { w }_{ d, t } }=\{ { w }_{ d, t-s },{ w }_{ d, t-C-1 },\dots { w }_{ d, t-1 },{ w }_{ d, t+1 },\dots ,{ w }_{ d, t+C }\}$ is considered relevant, where $C$ is half the window size and ${ w }_{ d, x }$ is the $x$-th word in document $d$ represented as a one-hot vector. To represent the context $c_{ { w }_{ t } }$, the single-hot vectors of each word in the context is either summed up or mean-averaged ((@sumcontext) or (@meancontext) respectively).
 
 (@sumcontext) $$ \vec { { c }_{ { w }_{ t } } } =\sum _{ w\in { c }_{ { w }_{ t } } }^{  }{ w }  $$
 

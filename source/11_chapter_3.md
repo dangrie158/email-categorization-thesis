@@ -116,12 +116,12 @@ The solution to this problem is called phrase detection. A phrase detection may 
 
 Normalization of text can consist of further steps like stemming, lemmatization or stopword filtering. However, to keep the corpus universally useable, these steps were not performed at this stage, as they may have no or even a negative impact on the performance of some classification algorithms since they remove information. However, some of the approaches in the next chapter do filter stopwords. The use of such a filter is mentioned in the corresponding chapters.
 
-For normalizing and tokenizing the news article texts, the *normalizr* package[^normalizr] is used. The normalization to the UTF-8 codec is done using pythons build-in *codecs* package. The phrase detection is done in a later step using gensims *phrases* class[^phrases] that uses the algorithm described above.
+For normalizing and tokenizing the news article texts, the *normalizr* package[^normalizr] is used. The normalization to the UTF-8 codec is done using pythons build-in *codecs* package. The phrase detection is done in a later step using gensim's *phrases* class[^phrases] that uses the algorithm described above.
 
 [^normalizr]: https://github.com/davidmogar/normalizr
 [^phrases]: https://radimrehurek.com/gensim/models/phrases.html
 
-## The Wikipedia Corpus
+## The Wikipedia Corpus {#sec:wikipedia-corpus}
 
 The word2vec model presented in [Chapter @sec:word2vec] tries to learn good word representations by leveraging the distributional hypothesis ans word co-occurrences. Previously unseen words, however, get initialized with a random vector that is then adjusted by the learning algorithm. This process yields vectors that are mainly based on their random initial state for words that occur only a few times in the corpus. For this reason, gensim's word2vec implementation offers the ```min_count``` parameter with a default value of 5. The parameter specifies a lower bound to how often a word needs to be observed in the corpus. Words which appear more infrequent are not learned by the model. This offers an easy way to make sure, the vectors learned by the model are not mostly based on a random state, but are adjusted by a minimum number of training steps.
 

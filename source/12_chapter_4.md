@@ -1,4 +1,4 @@
-# Initial Email Labeling
+# Initial Labeling
 
 As stated in [Section @sec:intro], @gfireport found that 62% of the people that use email on a daily basis already use different folders to organize their inbox. However, in this chapter methods will be presented and evaluated that can help users that did not yet use this organization technique to sort their emails when a pure manual sorting is not feasible due to the large size of the inbox.
 
@@ -44,7 +44,7 @@ A more sophisticated approach to generate document vectors from word2vec's word 
 
 ### Data visualization
 
-Visualizing the output of the vectorization can be a helpful way to determine the quality of the produced vectors. For a quick overview of where the document vectors point to in their embedding vector space and which vectors are neighbours to each other, a two-dimensional representation that can easily be visualized is desirable. However, this requires a dimensionality reduction from the high-dimensional representation vector space to a low dimensional visualization vector space. This dimensionality reduction needs to preserve the general structure of the high-dimensional vectors in their low-dimensional representatives.
+Visualizing the output of the vectorization can be a helpful way to determine the quality of the produced vectors. For a quick overview of where the document vectors point to in their embedding vector space and which vectors are neighbours to each other, a two-dimensional representation that can easily be visualized is desirable. However, this requires a dimensionality reduction from the high-dimensional representation vector space to a low-dimensional visualization vector space. This dimensionality reduction needs to preserve the general structure of the high-dimensional vectors in their low-dimensional representatives.
 
 One technique that is specifically developed for visualizations of high-dimensional data is *t-Distributed Stochastic Neighbor Embedding* (t-SNE) (@maaten2008visualizing). It provides state-of-the-art, structure-preserving dimensionality reduction and is highly scalable. The implementation used is created by Dmitry Ulyanov which is scalable to multiple CPU cores (-@ulyanov2016multicore).
 
@@ -95,7 +95,7 @@ Table: Result of different clustering algorithms on the vectors of the vectorize
 
 Another possibility for clustering an initial corpus may be the LDA topic model presented in [Chapter @sec:lda]. Therefore, this chapter will introduce a way to use the output of the LDA model to assign each document to one of 100 clusters.
 
-For these tests, a topic model with 100 topics was learned on the stopword filtered news corpus using gensims implementation of LDA [^gensim-lda], thus describing each document as a mixture of 100 topics.
+For these tests, a topic model with 100 topics was learned on the stopword filtered news corpus using gensim's implementation of LDA [^gensim-lda], thus describing each document as a mixture of 100 topics.
 
 These representations of the documents could then be used to assign each document to the topic which has the highest share in the mix of topics. This simple technique already yielded a homogeneity of 0.5013, which is better than any of the clustering techniques.
 
