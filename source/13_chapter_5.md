@@ -47,11 +47,28 @@ The size of this base model changes only little when learning the specific train
 
 Still, for each class a modifiable copy of the base model is needed. For the evaluation with 9 classes, the total size of all models is ~57.6 GB when using the 400-dimensional configuration or 30.6 GB for the 200-dimensional models respectively. Since this amount of memory was not available on the evaluation machine, the models were loaded sequentially, then the likelihood of each document $p(y|d)$ for all classes $y$ in the validation set was calculated for the model. The likelihoods were collected and the classification rule (@classification-rule) was applied after all documents were *scored* with each model.
 
-### Partial word2vec Models
+### Derived word2vec Models
 
 The practical implementation described in [Chapter @sec:w2vpractical] either requires large amounts of memory or does only allow for one or few models to be loaded in-memory at the same time. Both options may be suitable for a experimental environment, not, however, for a classifier used in a product.
 
-To reduce the amount of memory required,
+Learning a more specific model on top of a base model however, only affects a relatively small fraction of the base model's parameters, depending on the number of different words in the specific training data. To leverage this property, an implementation of word2vec for derived models was written, based on gensim's implementation.
+
+This implementation provides a ```DerivedWord2Vec``` class which expects a ```base_model``` parameter in it's constructor. The class implements the same interface as gensim's ```Word2Vec``` class for learning, scoring and model persistency.
+
+While learning however, the implementation performs a copy-on–write (COW) of the projection matrices and the dictionary of the base model. Therefore, while learning, double of the base models size is required as allocated and used memory. To leverage the fast C implementation of the word2vec learning routines, each new batch of training documents is learned on the base model. After learning a batch of documents, the changes in the base model are copied to the derived model by comparing all parameters with the copy created before learning. Then, the original state of the base model is restored.
+
+This implementation does not allow for concurrent training of multiple derived models at the same time, since the base model is shared between all derived models and is changed while training. However, since gensim's word2vec implementation can utilize multiple cores while learning, there is no need to concurrently learn multiple models on the same base model for training speed reasons.
+
+During the projection of words into the embedding space or scoring of documents, the copied differences found while learning are used to shadow the lookup of parameters in the base model. This means lookup is first performed on the sparse representation of derived parameters. On a miss, the lookup is performed on the dense base model parameters. Since the base model is in this case used read-only, concurrent use of multiple derived models on the same base model is possible.
+
+Using this implementation, a derived model for each category in the news corpus was learned. The size of each model is shown in [Table @tbl:derived-sizes]. Using a separate word2vec model for each category required ~$3.4 GB * num_categories$ of memory while using derived models need $3.4GB + \sum { size\_ of\_ model }$. Therefore, the amount of memory required drops significantly when using more than one specific model at the same time. The complete classifier with all derived category models loaded requires TODO GB of memory, compared to the 57.6 GB for the separate models.
+
+|                  | Size [MB] |
+|------------------|-----------|
+| Wikipedia Corpus | 3400      |
+|                  |           |
+|                  |           |
+Table: Sizes of the derived and complete model for each category {#tbl:derived-sizes}
 
 
 - riesen modelle
