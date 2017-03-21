@@ -4,6 +4,10 @@ In this chapter, different approaches to automatically classify new emails using
 
 All algorithms are trained and evaluated on the news corpus with a 90% / 10% split for training and evaluation data. The corpus is split so that the a priori probability for all classes is equal in the validation and training set.
 
+Due to the small size of the category ```Aktuell```, this category was not considered during the evaluation since it would only contain ~20 validation elements and is, with its size, an outlier to all other categories. Furthermore the category ```Ausland``` was also removed from the evaluation since it proved to contain a wide mix of topics concerning politics, sports, society and economy, all also present in other categories. This leaves 9 distinct classes for the evaluation.
+
+All algorithms, except for the CNN, were evaluated on a 2015 MacBook Pro with a 2.9 GHz i5 Processor and 16 GB of memory.
+
 ## Classification through Inversion via Bayes Rule
 
 @taddy2015document shows how any distributed language model can be used as a classifier by using the Bayes Rule.
@@ -29,15 +33,26 @@ The classification rule is then the maximization of the posterior probability wh
 \end{aligned}
 $$
 
-### Practical Implementation
+### Practical Implementation {#sec:w2vpractical}
 
 The likelihood of a new document, that was not present in the training data, can be calculated by the ```score``` function of gensim's word2vec implementation. Therefore, the classifier described above is trivial to implement.
 
-A practical implementation of the classifier, especially for a higher number of classes, however, comes with some challenges. To overcome the problem of corpus size and the initial, random state described in [Chapter @sec:wikipedia-corpus], a model on the wikipedia corpus was trained, which then could be used as a neutral base language model for each category's training data. This base model with $V=1,862,009$ unique words, when configured to embed the words in a $k=200$ dimensional vector space, has a memory consumption of $k \times V \times b$ for both, the $Wi$ and the $Wo$ matrix where $b$ is the size of the datatype used to save the elements of the matrix. Gensim uses the ```np.float32``` data type which needs 4 bytes of memory. Therefore, only the two projection matrices need approximately 3GB.
+A practical implementation of the classifier, especially for a higher number of classes, however, comes with some challenges. To overcome the problem of corpus size and the initial, random state described in [Chapter @sec:wikipedia-corpus], a model on the wikipedia corpus was trained, which then could be used as a neutral base language model for each category's training data. This base model with $V=1,862,009$ unique words, when configured to embed the words in a $k=200$ dimensional vector space, has a memory consumption of $k \times V \times b$ for both, the $Wi$ and the $Wo$ matrix where $b$ is the size of the datatype used to save the elements of the matrix. Gensim uses the ```numpy.float32``` data type which needs 4 bytes of memory. Therefore, only the two projection matrices need approximately 3GB.
 
 The mapping of the words to the corresponding row, respectively column of the projection matrices, the dictionary, can not be calculated this precisely, since the words vary in length.
 
 A 200-dimensional model that uses hierarchical softmax needs in total just over 3.4 GB, therefore the dictionary and huffman tree occupy around 400MB. The dimensionality of the model affects the size of the projection matrices in a linear way, however it does not affect the dictionary nor the other parts of the model. A 400-dimensional model of the same corpus therefore requires around 6.4 GB.
+
+The size of this base model changes only little when learning the specific training data for each class. This is due to the fact that most words in the training data are already present in the base model's corpus and therefore training these only adjusts the elements in the matrices. Only words not already present add new rows, respectively columns, to the projections which proved to be a negligible minority of words.
+
+Still, for each class a modifiable copy of the base model is needed. For the evaluation with 9 classes, the total size of all models is ~57.6 GB when using the 400-dimensional configuration or 30.6 GB for the 200-dimensional models respectively. Since this amount of memory was not available on the evaluation machine, the models were loaded sequentially, then the likelihood of each document $p(y|d)$ for all classes $y$ in the validation set was calculated for the model. The likelihoods were collected and the classification rule (@classification-rule) was applied after all documents were *scored* with each model.
+
+### Partial word2vec Models
+
+The practical implementation described in [Chapter @sec:w2vpractical] either requires large amounts of memory or does only allow for one or few models to be loaded in-memory at the same time. Both options may be suitable for a experimental environment, not, however, for a classifier used in a product.
+
+To reduce the amount of memory required,
+
 
 - riesen modelle
 - beste performance
