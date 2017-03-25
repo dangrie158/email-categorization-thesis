@@ -1,4 +1,4 @@
-# Initial Labeling
+# Initial Labeling {#sec:initial-labeling}
 
 As stated in [Section @sec:intro], @gfireport found that 62% of the people that use email on a daily basis already use different folders to organize their inbox. However, in this chapter methods will be presented and evaluated that can help users that did not yet use this organization technique to sort their emails when a pure manual sorting is not feasible due to the large size of the inbox.
 
@@ -26,7 +26,7 @@ Since both, the TF and TF-IDF vectorizer, do not order the words according to th
 
 @basavaraju2010novel have successfully demonstrated the usefulness of such simple vectorizers when clustering mail data for the binary classification task spam detection. However, these vector representations use really simple representations for the words. Since each word is only encoded as a *count*, each word can be considered to have the same distance to each other. Therefore, the words `Dog`, `Cat` and `Car` all have the same distance to each other, since their representations in the vector space are all orthogonal.
 
-### Document Vectors from word2vec
+### Document Vectors from word2vec {#sec:clustersum}
 
 Since the objective of word2vec is to learn good vector representations of the words in the corpus, a natural idea is to use these embeddings in the vectorization of the documents.
 
@@ -35,6 +35,10 @@ A simple way to create a document representation from word vectors is to calcula
 (@sumword2doc) $$ \vec { d } =\frac { 1 }{ K } \sum _{ k=1 }^{ K }{ w2v({ w }_{ d,k }) } $$
 
 Due to the associative property of the summation of the vectors, the document vector loses all information about the order the words appeared in. Therefore, this technique also uses a BOW approach.
+
+To take into consideration that not all words have the same significance, the inverse document frequency can be used to weight individual words just like in the TF-IDF vector. (@sumword2devidf) shows the vectorization rule with the IDF of each word considered.
+
+(@sumword2doc) $$ \vec { d } =\frac { 1 }{ K } \sum _{ k=1 }^{ K }{ w2v({ w }_{ d,k }) * idf({ w }_{ d,k }) } $$
 
 ### Paragraph Vector
 
@@ -82,13 +86,13 @@ To measure the quality of the output of a clustering, there are multiple measure
 
 The bad results for the TF-IDF vectors can be explained by the simplicity of the vectorization. While the other vectorizers could profit from the large Wikipedia base corpus to learn peculiarities of the language, like tense independency and synonyms, the TF-IDF vectorizer can only weight the terms depending on their document frequency. Due to the large dimensionality of the TF-IDF vectors equal to the length of the vocabulary, the clustering was also the slowest of all 3 vectors.
 
-|                 |          TF-IDF | word2vec summation | Paragraph Vectors |
-|-----------------|-----------------|--------------------|-------------------|
-| k-Means         |  0.098562652731 |     0.420533216750 |    0.212863561758 |
-| Ward            |  0.172819461094 |     0.470831718941 |    0.202373066946 |
-| Birch           |  0.208745672372 |     0.468893870622 |    0.339690047161 |
-| Average Linkage |  0.008964382833 |     0.028169069224 |    0.010947798218 |
-| DBSCAN          |  0.037289272308 |     0.016579591210 |    0.057261994729 |
+|                 |  TF-IDF | word2vec summation | Paragraph Vectors |
+|-----------------|---------|--------------------|-------------------|
+| k-Means         |   0.099 |              0.421 |             0.213 |
+| Ward            |   0.173 |              0.471 |             0.202 |
+| Birch           |   0.209 |              0.468 |             0.340 |
+| Average Linkage |   0.010 |              0.028 |             0.011 |
+| DBSCAN          |   0.037 |              0.017 |             0.057 |
 Table: Result of different clustering algorithms on the vectors of the vectorizers {#tbl:clustering-results}
 
 ## LDA Topics
@@ -125,14 +129,14 @@ The results all show a worse performance regarding the homogeneity of the cluste
 
 |                 |     homogeneity |
 |-----------------|-----------------|
-| k-Means         |  0.275950239961 |
-| Ward            |  0.266374525672 |
-| Birch           |  0.242425781726 |
-| Average Linkage |  0.022816538530 |
-| DBSCAN          |  0.114639442366 |
+| k-Means         |           0.276 |
+| Ward            |           0.266 |
+| Birch           |           0.242 |
+| Average Linkage |           0.023 |
+| DBSCAN          |           0.115 |
 Table: Homogeneity of the clusters created using LDA as a vectorizer {#tbl:lda-clustering}
 
-## Conclusion and discussion
+## Conclusion and Discussion
 
 The results of the clustering experiment show, that the summation of word vectors yields a good representation for a document. It is also visible that the vectorization using a model which was pre trained on a large corpus to learn peculiarities of the language can generate better vectors with a rather low dimension than classical TF-IDF vectorization which yields high dimensional but sparse vectors.
 

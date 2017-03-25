@@ -1,6 +1,6 @@
 # Automatic Classification
 
-In this chapter, different approaches to automatically classify new emails using word2vec VSMs will be presented and evaluated. The evaluation also compares the results with state-of-the-art text classification techniques, for example support vector machines (SVM) or random forests (RF).
+In this chapter, different approaches to automatically classify new emails using word2vec VSMs will be presented and evaluated. The evaluation also compares the results with state-of-the-art text classification techniques, for example support vector machines (SVM) (@joachims1998text) or random forests (RF) using TF-IDF document vectors.
 
 All algorithms are trained and evaluated on the news corpus with a 90% / 10% split for training and evaluation data. The corpus is split so that the a priori probability for all classes is equal in the validation and training set.
 
@@ -61,38 +61,123 @@ This implementation does not allow for concurrent training of multiple derived m
 
 During the projection of words into the embedding space or scoring of documents, the copied differences found while learning are used to shadow the lookup of parameters in the base model. This means lookup is first performed on the sparse representation of derived parameters. On a miss, the lookup is performed on the dense base model parameters. Since the base model is in this case used read-only, concurrent use of multiple derived models on the same base model is possible.
 
-Using this implementation, a derived model for each category in the news corpus was learned. The size of each model is shown in [Table @tbl:derived-sizes]. Using a separate word2vec model for each category required ~$3.4 GB * num_categories$ of memory while using derived models need $3.4GB + \sum { size\_ of\_ model }$. Therefore, the amount of memory required drops significantly when using more than one specific model at the same time. The complete classifier with all derived category models loaded requires TODO GB of memory, compared to the 57.6 GB for the separate models.
+Using this implementation, a derived model for each category in the news corpus was learned. The size of each model is shown in [Table @tbl:derived-sizes]. Using a separate, complete word2vec model for each category requires ~$3.4 GB * num\_categories$ of memory while using derived models only needs $3.4 GB + \sum { size\_ of\_ model }$. Therefore, the amount of memory required drops significantly when using more than one specific model at the same time. The complete classifier with all derived category models loaded requires ~4.4 GB of memory, compared to the 57.6 GB for the separate models.
 
-|                  | Size [MB] |
-|------------------|-----------|
-| Wikipedia Corpus | 3400      |
-|                  |           |
-|                  |           |
-Table: Sizes of the derived and complete model for each category {#tbl:derived-sizes}
+|             | Corpus Size [MB] | Derived Model Size [MB] |
+|-------------|------------------|-------------------------|
+| Aktuell     |                1 |                      14 |
+| Ausland     |                8 |                      34 |
+| Finanzen    |                6 |                      62 |
+| Kultur      |               14 |                     110 |
+| Lifestyle   |               10 |                     118 |
+| Lokal       |               13 |                      87 |
+| Politik     |               37 |                     130 |
+| Sonstiges   |               21 |                     120 |
+| Sport       |               15 |                      88 |
+| Technologie |               11 |                     105 |
+| Wirtschaft  |               13 |                     104 |
+| **Total**   |          **149** |                 **972** |
+Table: Sizes of the derived models for each category and a 200-dimensional target vector space {#tbl:derived-sizes}
 
+## Classification using Summation of Word Vectors
 
-- riesen modelle
-- beste performance
-- schnell (gute performance für lernen und sehr gute performance für kategorisieren)
+The document vectors built by summing all word vectors of the document presented in [chapter @sec:clustersum] worked particularly good for the clustering of documents. Using this technique, it is trivial to generate document vectors for previously unseen documents using only a single word2vec model. To build a classifier using these vectors, any classification algorithm can be used that works by finding spatial borders between the classes. For this experiment an SVM classifier was used, since a SVM classifier had the best performance on the TF-IDF vectors. However, a random forest classifier was also evaluated on these document vectors which showed a slightly worse performance, comparable to the difference between the SVM and random forest classifier for the TF-IDF vectors.
 
-## word2vec as doc2vec (SVD as classifier)
+### Practical Implementation
 
-- schlechte performance (schlechter als tf-idf vectorizer mit SVD)
-- nur ein riesen modell
-- semi schnell (SVD lernen ok, prediction gut)
+The classifier was built using the multiclass SVC implementation from scipy[^scipy-svc]. To transform the documents into vectors, a python class was written implementing a ```transform``` function to make the vectorizer chainable into a scipy ```Pipeline``` with the SVC being the penultimate step. The transform function implements the vectorization with the words IDF as a significance weight (@sumword2doc).
 
-## cnn
-- (noch) beschissene performance
-- mini modell (cnn) + 1 w2v modell
-- nicht alle daten können verwendet werden (a-priori normalisierung)
-- langsam (ewig am lernen, langsame vorhersage)
+The vectorization process requires only a single word2vec model, therefore the memory consumption of the classifier is mainly dependent on the size of this model.
 
-problems:
-- random initialization (missing words) needs same distribution
-- padding (how avoided) (maybe: is it really a problem when worde repititions from article beginning)
-- same a-priori (overfitting to a-priori as parameter)
-    - solved through equalization of a-priori
-- hard to learn (all other models were learned on a macbook, this needs to be learned on a 4GPU cluster)
+[^scipy-svc]: http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
+
+## Convolutional Neural Network Classifier
+
+@kim2014convolutional present the use of convolutional neural networks (CNN) for the classification of text using matrices of word vectors. The input to the network is constructed by building a matrix for the document where each row $i$ is the line vector of the $i$-th word. This process yields a matrix with $n$ rows and $k$ columns where $n$ is the number of words and $k$ is the dimensionality of the target vector space of the used word2vec model (@cnn-input).
+
+(@cnn-input) $$d=\begin{bmatrix} { x }_{ 1,1 } & { x }_{ 1,2 } & \cdots  & { x }_{ 1,k } \\ { x }_{ 2,1 } & { x }_{ 2,2 } & \cdots  & { x }_{ 2,k } \\ \vdots  & \vdots  & \ddots  & \vdots  \\ { x }_{ n,1 } & { x }_{ n,2 } & \cdots  & { x }_{ n,k } \end{bmatrix}$$
+
+Since all input to a CNN needs to be of the same dimension, the document matrix is then truncated or padded with zero vectors to some fixed number of words $N$.
+
+The fixed-length document matrix is then filtered by multiple, parallel convolutional layers with different filter heights. Since the word vectors represent a word in a high-dimensional vector space, the filter width, however, is always fixed to the dimensionality of the word2vec model. The filters therefore can be seen as a shifting context window over the word vectors where the filter height determines the context size.
+
+The resulting feature map is then max-pooled. This step also deals with documents shorter than $N$ words, since they were zero-padded and therefore will not be selected in the pooling operation.
+
+The features found by this process are then classified by a single fully-connected layer with a softmax activation function on the output layer. The output layer has a neuron for each of the $C$ classes and due to the softmax function, each neuron outputs the log-likelihood of a document being of its corresponding class. To regularize the dense classification layer to prevent overfitting, connections are dropped out randomly for each training step.
+
+[Figure @fig:text-cnn] visualizes the structure of the CNN.
+
+![Visualization of the CNN structure. Adapted from @kim2014convolutional](source/figures/text-cnn.pdf "CNN structure for text classification"){width=90% #fig:text-cnn}
+
+### Practical Implementation
+
+For the practical implementation of the network, Keras was used as an abstraction layer on a TensorFlow Backend.
+
+Due to the heavy tail in the length of articles ([figure @fig:articlesize]), using the maximum article length of 13,133 words as the height for the document matrices ($N$) would require a high amount of padding and therefore a lot of unnecessary filter positions which would produce features that are ignored due to the downstream max-pooling operation.
+
+To avoid the superfluous filter positions and increased memory consumption, $N$ was set to the median of the article length of 324 words. With this value, only around half of the articles require padding with an average length of ~155 zero tokens. The other articles require truncation of, on average, ~426 words but due to the heavy tail of the article length, the median is only 284 words.
+
+The convolutional layers were configured with filter sizes of 3, 4 and 5 words which are the same values used in @kim2014convolutional. Other parameters like the ReLU activation functions, the number of 64 filters per filter size and the dropout rate if the fully connected layer of 0.5 were also copied from this work.
+
+The model was learned using categorical crossentropy as a loss function which was minimized using the ADADELTA optimizer (@zeiler2012adadelta) over 15 epochs.
+
+## Other classifiers for Comparison
+
+To get a relative comparison of the performance of the classifiers presented above, the following classifiers that are commonly used in text classification tasks are used as a baseline comparison.
+
+- Multinomial naive Bayes on term frequency vectors
+- SVM classifier on TF-IDF vectors
+- Random forest on TF-IDF vectors
+
+For all of these classifiers, the scipy implementation was used.
+
+The documentation for the multinomial naive Bayes[^naive-bayes-doc] states that, while normally used with integer features, fractional features such as TF-IDF *may* work. However, in this experiment the performance of the classifier using TF-IDF features was up to 25% worse than the classifier with the same data and only term frequency features.
+
+[^naive-bayes-doc]: http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html
+
+## Results and Discussion
+
+[Table @tbl:classification-results] shows the accuracy of the classifiers when they were trained on the complete trainingset. The maximum likelihood classifier, the CNN and the SVC using the summarized word2vec vectors use a 200-dimensional word2vec base model trained on the wikipedia corpus.
+
+| Classifier            | Accuracy     |
+|-----------------------|--------------|
+| Multinomial NB        |     0.734807 |
+| SVC (TF-IDF)          | **0.786781** |
+| Rand. Forest (TF-IDF) |     0.732760 |
+| w2v inv. Bayes        |     0.786435 |
+| SVC (w2v)             |     0.708205 |
+| CNN                   |     0.598900 |
+Table: Result of the classification comparison on the whole news corpus {#tbl:classification-results}
+
+As one can see, the SVC using TF-IDF features shows the best accuracy. The classifier using separate word2vec model to maximize the likelihood, however, is virtually on par. The naive Bayes and the Random Forest classifier both perform at around 73% accuracy, around 6.5% worse than the best result.
+
+Interestingly, the SVM classifier using the summarized word2vec vector features performed much worse than the same classifier using TF-IDF features. This result is unexpected, since the summarized word2vec vectors proved to be a much better feature for the clustering in [chapter @sec:initial-labeling] compared to the TF-IDF vectors (see [Table @tbl:clustering-results]).
+
+This result, however, is only calculated on the complete corpus with a rather large number of training elements in each category. To provide a more complete comparison of the classifier's performance, [figure @fig:class-performance] plots the accuracy of all classifiers when limited to a smaller number of training elements.
+
+The smaller training sets were created by truncating the training elements of each category to a maximum of $N={10, 50, 100, 500, 1000, 2000, 5000, 10000, \infty}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements ${90, 450, 900, 4500, 9000, 17938, 31311, 39379, 43174}$. The validation sets were not truncated, so that always the complete set was used during validation.
+
+![Result of the classification comparison over a varying corpus size](source/figures/categorization_comparison.pdf){width=100% #fig:class-performance}
+
+As one can see, the SVC using summarized word2vec document vectors and the maximum likelihood classifier perform best over the range from 450 to 4500 documents in the training set (50 and 500 documents per category respectively).
+
+For a very low number of documents, the multinomial naive Bayes performes best and it also has a very good, although not best, performance for all training set sizes.
+
+SVC and random forest, both using TF-IDF vectors, perform relatively similar, starting out with a very low accuracy score for small training sets and, having the steepest increase, perform best when trained with 1000 elements per class.
+
+The bad performance of the CNN was unexpected, especially since the network was the only classifier which could not be trained on the test machine but had to be trained on a machine with 4 NVIDIA GTX 1080 GPUs which would already disqualify the classifier for the use in a end-user product due to its impracticality. The poor performance may stem from the fact that the CNN was the only classifier which needed to truncate documents to equalize the document length in a reasonable way.
+
+The sharp rise of most classifiers at the very end, representing the values in [table @tbl:classification-results], can be explained by the fact, that only training elements of the class ```Politik``` were added to the overall training set, thus increasing the accuracy of this single class non-linear compared to the linear increase in overall training-set size.
+
+The results show that, for medium sized training sets, the likelihood maximization and the SVC classifier using word2vec document vectors perform best. Although for very big training sets the SVC and random forest classifiers using TF-IDF document vectors perform on par or marginally better, the better performance over the varying corpus size shows a clear advantage of the word2vec classifiers. For very small training sets, the advantage of the word2vec vectors being trained on a base model becomes visible when comparing both SVM classifiers. While the SVC using TF-IDF vectors starts with an accuracy close to random guessing (for $C=9$ classes the expected accuracy of random guessing is $\frac{1}{C} \approx 0.111$), the SVC using word2vec document vectors already has a much higher accuracy when only very little training data is available.
+
+With the memory conserving implementation of the derived word2vec models this classifier, which performed best over a wide range of training set sizes, becomes practically usable.
+
+Another interesting observation of this experiment which shall not go unmentioned is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
+
+![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=100% #fig:w2vdimen-comparison}
+
+As one can see, the classifiers using higher dimensional models perform generally slightly worse than their counterparts using a low-dimensional model.
 
 ## results & comparison of methods
 not near 100% accuracy (currently ~80%)
@@ -102,16 +187,12 @@ if confidence < minimum score: don't sort the email
 
 speed / mem consumption: auch wenn initiales lernen ein "einmaliger" task ist ist geschwindigkeit immer gut. ausserdem müssen modelle eventuell neu gelert werden (z.B. wenn neue klassen hinzukommen oder andere hyperparameter verändert werden sollen)
 
+ergebnis von cnn deckt sich mit den ergebnissen im paper (schlechter als SVM)
+
 ## evaluation / results
 
 ## other metrics (input parameters)
-- metadata (auch wenn keine tests damit gemacht wurden weil der corpus fehlt ein paar gedanken dazu)
-- author (via SVD)
-- how to combine
-- maybe sometimes only the metadata is available (secured connections SMTP over SSL)
 
-experiment:
-learn authors -> category and test result (are the authors really in this category)
 
 ## Naiver Bayes auf LDA
 

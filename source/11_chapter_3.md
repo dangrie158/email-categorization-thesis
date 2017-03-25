@@ -21,7 +21,7 @@ Since no empirical data could be found about whether or not news articles have t
 
 This section describes properties of the used news corpus and how it was build.
 
-The corpus was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 10,000 words. However, it still represents over 97.6% of all articles.
+The corpus was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 2000 words. However, it still represents over 98.9% of all articles.
 
 ![Growth of the corpus size over time](source/figures/corpus_size.pdf "Corpus growth"){#fig:corpuscount}
 

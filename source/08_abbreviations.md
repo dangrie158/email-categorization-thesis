@@ -20,6 +20,7 @@
 \textbf{URL}             \> \textbf{U}niform \textbf{R}esource \textbf{L}ocator \\  
 \textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor\\ \textbf{E}mbedding \\  
 \textbf{COW}             \> \textbf{c}opy-\textbf{o}n-\textbf{w}rite \\  
+\textbf{CNN}             \> \textbf{C}onvolutional \textbf{N}eural \textbf{N}etwork \\  
 \end{tabbing}
 
 \newpage
