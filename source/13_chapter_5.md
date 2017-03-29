@@ -155,46 +155,32 @@ Interestingly, the SVM classifier using the summarized word2vec vector features 
 
 This result, however, is only calculated on the complete corpus with a rather large number of training elements in each category. To provide a more complete comparison of the classifier's performance, [figure @fig:class-performance] plots the accuracy of all classifiers when limited to a smaller number of training elements.
 
-The smaller training sets were created by truncating the training elements of each category to a maximum of $N={10, 50, 100, 500, 1000, 2000, 5000, 10000, \infty}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements ${90, 450, 900, 4500, 9000, 17938, 31311, 39379, 43174}$. The validation sets were not truncated, so that always the complete set was used during validation.
+The smaller training sets were created by truncating the training elements of each category to a maximum of $N={10, 50, 100, 500, 1000, 2000, 5000, 10000}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements ${90, 450, 900, 4500, 9000, 17938, 31311, 39379}$. The validation sets were not truncated, so that always the complete set was used during validation.
 
 ![Result of the classification comparison over a varying corpus size](source/figures/categorization_comparison.pdf){width=100% #fig:class-performance}
 
 As one can see, the SVC using summarized word2vec document vectors and the maximum likelihood classifier perform best over the range from 450 to 4500 documents in the training set (50 and 500 documents per category respectively).
 
-For a very low number of documents, the multinomial naive Bayes performes best and it also has a very good, although not best, performance for all training set sizes.
+For a very low number of documents, the multinomial naive Bayes performed best and it also has a very good, although not best, performance for all training set sizes.
 
-SVC and random forest, both using TF-IDF vectors, perform relatively similar, starting out with a very low accuracy score for small training sets and, having the steepest increase, perform best when trained with 1000 elements per class.
+SVC and random forest, both using TF-IDF vectors, perform relatively similar, starting out with a very low accuracy score for small training sets and, having the steepest increase, perform best when trained with over 1000 elements per class.
 
 The bad performance of the CNN was unexpected, especially since the network was the only classifier which could not be trained on the test machine but had to be trained on a machine with 4 NVIDIA GTX 1080 GPUs which would already disqualify the classifier for the use in a end-user product due to its impracticality. The poor performance may stem from the fact that the CNN was the only classifier which needed to truncate documents to equalize the document length in a reasonable way.
 
-The sharp rise of most classifiers at the very end, representing the values in [table @tbl:classification-results], can be explained by the fact, that only training elements of the class ```Politik``` were added to the overall training set, thus increasing the accuracy of this single class non-linear compared to the linear increase in overall training-set size.
+The results show that, for medium sized training sets, the likelihood maximization and the SVC classifier using word2vec document vectors perform best. Although for very big training sets the SVC and random forest classifiers using TF-IDF document vectors perform on par or marginally better, the better performance over the varying corpus size shows a advantage of the word2vec classifiers. For very small training sets, the advantage of the word2vec vectors being trained on a base model becomes visible when comparing both SVM classifiers. While the SVC using TF-IDF vectors starts with an accuracy close to random guessing (for $C=9$ classes the expected accuracy of random guessing is $\frac{1}{C} \approx 0.111$), the SVC using word2vec document vectors already has a much higher accuracy when only very little training data is available.
 
-The results show that, for medium sized training sets, the likelihood maximization and the SVC classifier using word2vec document vectors perform best. Although for very big training sets the SVC and random forest classifiers using TF-IDF document vectors perform on par or marginally better, the better performance over the varying corpus size shows a clear advantage of the word2vec classifiers. For very small training sets, the advantage of the word2vec vectors being trained on a base model becomes visible when comparing both SVM classifiers. While the SVC using TF-IDF vectors starts with an accuracy close to random guessing (for $C=9$ classes the expected accuracy of random guessing is $\frac{1}{C} \approx 0.111$), the SVC using word2vec document vectors already has a much higher accuracy when only very little training data is available.
-
-With the memory conserving implementation of the derived word2vec models this classifier, which performed best over a wide range of training set sizes, becomes practically usable.
+With the memory conserving implementation of the derived word2vec models this classifier, which performed second best over a wide range of training set sizes, becomes of practical use.
 
 Another interesting observation of this experiment which shall not go unmentioned is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
 
 ![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=100% #fig:w2vdimen-comparison}
 
-As one can see, the classifiers using higher dimensional models perform generally slightly worse than their counterparts using a low-dimensional model.
+As one can see, using a base model with doubled dimensionality increases the performance of the SVM and the CNN classifier only slightly and in some cases, for the likelihood maximization even for all sizes of the training set, even worse.
 
-## results & comparison of methods
-not near 100% accuracy (currently ~80%)
-but: most methods have a "confidence" e.g. log-likelihood
--> confidence score
-if confidence < minimum score: don't sort the email
+The classifier maximizing the likelihood also has some other properties that are worth mentioning:
 
-speed / mem consumption: auch wenn initiales lernen ein "einmaliger" task ist ist geschwindigkeit immer gut. ausserdem müssen modelle eventuell neu gelert werden (z.B. wenn neue klassen hinzukommen oder andere hyperparameter verändert werden sollen)
+- **class model independence**: The models used to classify the documents are trained completely independent from one another. Therefore, new classes can be introduced by learning a model for the class at any time without affecting the models of other classes. This behavior is in contrast to the SVM and random forest classifiers which require re-learning over all training elements when introducing a new class. For emails this property can be useful, since new classes can be introduced quite frequently. The complete classifier would then need to be trained on the complete inbox which, for a large inbox, could be impractical.
 
-ergebnis von cnn deckt sich mit den ergebnissen im paper (schlechter als SVM)
+- **output is the log-likelihood of class affiliation**: The score output of the class model can therefore be used as a classification quality measure. When all class models output a low likelihood for a document or when the maximum value is close to the output of another model, the classification can be ignored. For a real world classifier used to classify incoming emails, the email could be put in the general inbox without moving it to a specific folder. This behavior is especially useful when the misclassification of an email is more severe than the non-classification of few (for example an important email that is falsely classified as spam is more severe than few spam emails that get put in the general inbox).
 
-## evaluation / results
-
-## other metrics (input parameters)
-
-
-## Naiver Bayes auf LDA
-
-
-## random Indexing
+Both of the above properties are also true for the multinomial naive Bayes classifier.
