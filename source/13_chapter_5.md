@@ -1,4 +1,4 @@
-# Automatic Classification
+# Automatic Classification {#sec:auto-classification}
 
 In this chapter, different approaches to automatically classify new emails using word2vec VSMs will be presented and evaluated. The evaluation also compares the results with state-of-the-art text classification techniques, for example support vector machines (SVM) (@joachims1998text) or random forests (RF) using TF-IDF document vectors.
 
@@ -135,7 +135,7 @@ The documentation for the multinomial naive Bayes[^naive-bayes-doc] states that,
 
 [^naive-bayes-doc]: http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html
 
-## Results and Discussion
+## Results and Discussion {#sec:classifier-result}
 
 [Table @tbl:classification-results] shows the accuracy of the classifiers when they were trained on the complete trainingset. The maximum likelihood classifier, the CNN and the SVC using the summarized word2vec vectors use a 200-dimensional word2vec base model trained on the wikipedia corpus.
 

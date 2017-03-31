@@ -12,13 +12,14 @@
 \textbf{LSI}             \> \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
 \textbf{PLSI}             \> \textbf{P}robabilistic \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
 \textbf{TF-IDF}             \> \textbf{T}erm \textbf{F}requency  \textbf{- I}nverse  \textbf{D}ocument \textbf{F}requency \\  
+\textbf{TTF}             \> \textbf{T}otal \textbf{T}erm \textbf{F}requency \\  
 \textbf{SVD}             \> \textbf{S}ingular \textbf{V}alue \textbf{D}ecomposition \\  
 \textbf{MCMC}             \> \textbf{M}arcov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\  
 \textbf{RSS}             \> \textbf{R}ich \textbf{S}ite \textbf{S}ummary \\  
 \textbf{SVM}             \> \textbf{S}upport \textbf{V}ector \textbf{M}achine \\  
 \textbf{RF}             \> \textbf{R}andom \textbf{F}orest \\  
 \textbf{URL}             \> \textbf{U}niform \textbf{R}esource \textbf{L}ocator \\  
-\textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor\\ \textbf{E}mbedding \\  
+\textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor \textbf{E}mbedding \\  
 \textbf{COW}             \> \textbf{c}opy-\textbf{o}n-\textbf{w}rite \\  
 \textbf{CNN}             \> \textbf{C}onvolutional \textbf{N}eural \textbf{N}etwork \\  
 \end{tabbing}

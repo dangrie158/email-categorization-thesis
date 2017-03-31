@@ -141,12 +141,12 @@ For this reason, a dump of the german Wikipedia corpus from 21. October 2017 is 
 stopwords:
 Total words: 13233740
 Unique words: 377777
-12804395 frequent word occurences
+12804395 frequent word occurrences
 108900 frequent words
 
 mit stopwords:
 Total words: 22084331
 Unique words: 377998
-21654986 frequent word occurences
+21654986 frequent word occurrences
 109121 frequent words
 -->

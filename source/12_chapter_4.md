@@ -38,7 +38,7 @@ Due to the associative property of the summation of the vectors, the document ve
 
 To take into consideration that not all words have the same significance, the inverse document frequency can be used to weight individual words just like in the TF-IDF vector. (@sumword2devidf) shows the vectorization rule with the IDF of each word considered.
 
-(@sumword2doc) $$ \vec { d } =\frac { 1 }{ K } \sum _{ k=1 }^{ K }{ w2v({ w }_{ d,k }) * idf({ w }_{ d,k }) } $$
+(@sumword2devidf) $$ \vec { d } =\frac { 1 }{ K } \sum _{ k=1 }^{ K }{ w2v({ w }_{ d,k }) * idf({ w }_{ d,k }) } $$
 
 ### Paragraph Vector
 

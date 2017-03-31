@@ -8,7 +8,7 @@ Keras
 
 mention von sasha can's paper
 
-This section provides an overview over the technologies and algorithms used to implement and validate the classifiers presented in the next section.
+This section provides an overview over the technologies and algorithms used to implement and validate the classifiers presented in the next sections.
 
 ## Word2Vec {#sec:word2vec}
 
