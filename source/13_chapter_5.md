@@ -91,7 +91,7 @@ The vectorization process requires only a single word2vec model, therefore the m
 
 [^scipy-svc]: http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
 
-## Convolutional Neural Network Classifier
+## Convolutional Neural Network Classifier {#sec:cnn-classifier}
 
 @kim2014convolutional present the use of convolutional neural networks (CNN) for the classification of text using matrices of word vectors. The input to the network is constructed by building a matrix for the document where each row $i$ is the line vector of the $i$-th word. This process yields a matrix with $n$ rows and $k$ columns where $n$ is the number of words and $k$ is the dimensionality of the target vector space of the used word2vec model (@cnn-input).
 

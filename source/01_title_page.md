@@ -12,7 +12,7 @@ This is the Latex-heavy title page.
         \vspace*{2.5cm}
 
         \huge
-        This is the title of the thesis
+        Email Classification using Word Vector Space Models
 
         \vspace{1.5cm}
 

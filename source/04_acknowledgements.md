@@ -1,10 +1,12 @@
-# Acknowledgements {.unnumbered}
+<!--# Acknowledgements {.unnumbered}
 
-<!-- This is for acknowledging all of the people who helped out -->
 
-Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam congue fermentum ante, semper porta nisl consectetur ut. Duis ornare sit amet dui ac faucibus. Phasellus ullamcorper leo vitae arcu ultricies cursus. Duis tristique lacus eget metus bibendum, at dapibus ante malesuada. In dictum nulla nec porta varius. Fusce et elit eget sapien fringilla maximus in sit amet dui.
+First and foremost thanks to Prof. Dr. Johannes Maucher for supervising this thesis and
 
-Mauris eget blandit nisi, faucibus imperdiet odio. Suspendisse blandit dolor sed tellus venenatis, venenatis fringilla turpis pretium. Donec pharetra arcu vitae euismod tincidunt. Morbi ut turpis volutpat, ultrices felis non, finibus justo. Proin convallis accumsan sem ac vulputate. Sed rhoncus ipsum eu urna placerat, sed rhoncus erat facilisis. Praesent vitae vestibulum dui. Proin interdum tellus ac velit varius, sed finibus turpis placerat.
-<!-- Use the \newpage command to force a  new page -->
+Also thanks to Tom Pollard for providing the template[^phd-template] for pandoc[^pandoc] used to create this thesis under a open-source MIT license and thus saving me from \LaTeX\ syntax.
 
-\newpage
+[^pandoc]: http://pandoc.org
+[^phd-template]: https://github.com/tompollard/phd_thesis_markdown
+
+
+\newpage -->

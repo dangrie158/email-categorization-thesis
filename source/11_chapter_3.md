@@ -21,7 +21,7 @@ Since no empirical data could be found about whether or not news articles have t
 
 This section describes properties of the used news corpus and how it was build.
 
-The corpus was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 2000 words. However, it still represents over 98.9% of all articles.
+The corpus used in this thesis was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 german news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram doesn't show outlier articles with more than 2000 words. However, it still represents over 98.9% of all articles.
 
 ![Growth of the corpus size over time](source/figures/corpus_size.pdf "Corpus growth"){#fig:corpuscount}
 
@@ -68,21 +68,20 @@ While this approach requires manual work every time one of the sites changes the
 
 [Table @tbl:categories-count] shows the number of articles in each category.
 
-| Label         | English Meaning   | Example Subtopics                                      |
-|---------------|-------------------|--------------------------------------------------------|
-| Politik       | domestic politics | ```politik_deutschland```, ```innenpolitik```          |
-| Ausland       | foreign politics  | ```politik_ausland```, ```ausland```                   |
-| Aktuell       | latest news       | ```newsticker```, ```thema```, ```eilmeldung```        |
-| Technologie   | technology        | ```Wissen_Mensch```, ```spiegelwissen```               |
-| Kultur        | culture           | ```Wissen_Kultur```, ```Wissen_History```              |
-| Wirtschaft    | economy           | ```unternehmen_management```                           |
-| Finanzen      | finances          | ```finanzen_immobilien```, ```vorsorge```              |
-| Sport         | sports            | ```Sport_tennis```, ```Sport_Fussball```               |
-| Sonstiges     | miscellanea       | ```allgemein```, ```schlusslicht```, ```campus```      |
-| Lokal         | local             | ```kommunalpolitik```, ```nrw```, ```hamburg```        |
-| Lifestyle     | lifestyle         | ```shopping```, ```stil```, ```entdecken```            |
-| *Ignore*      |                   | ```icon```, ```videoblog```, ```anzeigen```            |
-
+| Label        | English Meaning   | Example Subtopics                                      |
+|--------------|-------------------|--------------------------------------------------------|
+| Politik      | domestic politics | ```politik_deutschland```, ```innenpolitik```          |
+| Ausland      | foreign politics  | ```politik_ausland```, ```ausland```                   |
+| Aktuell      | latest news       | ```newsticker```, ```thema```, ```eilmeldung```        |
+| Technologie  | technology        | ```Wissen_Mensch```, ```spiegelwissen```               |
+| Kultur       | culture           | ```Wissen_Kultur```, ```Wissen_History```              |
+| Wirtschaft   | economy           | ```unternehmen_management```                           |
+| Finanzen     | finances          | ```finanzen_immobilien```, ```vorsorge```              |
+| Sport        | sports            | ```Sport_tennis```, ```Sport_Fussball```               |
+| Sonstiges    | miscellanea       | ```allgemein```, ```schlusslicht```, ```campus```      |
+| Lokal        | local             | ```kommunalpolitik```, ```nrw```, ```hamburg```        |
+| Lifestyle    | lifestyle         | ```shopping```, ```stil```, ```entdecken```            |
+| *Ignore*     |                   | ```icon```, ```videoblog```, ```anzeigen```            |
 Table: The categories used as Labels  {#tbl:categories}
 
 | Label         |    articles   |
@@ -99,7 +98,6 @@ Table: The categories used as Labels  {#tbl:categories}
 | Lokal         |          2700 |
 | Lifestyle     |          3305 |
 | *Ignore*      |           574 |
-
 Table: Number of articles in each category  {#tbl:categories-count}
 
 ## Article normalization

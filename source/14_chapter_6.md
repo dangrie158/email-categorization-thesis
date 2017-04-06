@@ -1,4 +1,4 @@
-# Introducing new classes to a classifier
+# Introducing new classes to a classifier {#sec:new-classes}
 
 The classifiers evaluated in the previous chapter perform better (have higher accuracy on the validation set) when trained with more data ([Figure @fig:class-performance]). When working with email data however, it is expected that new classes can be introduced which have very little training data. This may happen because a new project requires a new folder in the inbox for all communication associated with it.
 
@@ -8,7 +8,7 @@ When enough data is available, a new derived word2vec model can be trained and u
 
 The general idea is that language is very rich in a way that often words can be replaced without changing the meaning of the sentence. The words that can be replaced with each other are then synonymous. Furthermore, sometimes words can be replaced with other words that are not synonymous, however the sentence is still about the same topic. For example a document about soccer where each occurrence of the word soccer is replaced with baseball is still about the general topic sports.
 
-This connection between words is also reflected by the ditributional hypothesis (@harris1954distributional) and therefore is learned by a word2vec model. In fact, word2vec learns word vectors that have a short distance (for cosine similarity) to words that are synonymous or thematically related. For example, in the model learned on the wikipedia corpus, closest to the vector of the word ```president``` are the vectors for the words ```chairman```, ```chancellor```and ```commissioner```, all representing a political topic.
+This connection between words is also reflected by the distributional hypothesis (@harris1954distributional) and therefore is learned by a word2vec model. In fact, word2vec learns word vectors that have a short distance (for cosine similarity) to words that are synonymous or thematically related. For example, in the model learned on the wikipedia corpus, closest to the vector of the word ```president``` are the vectors for the words ```chairman```, ```chancellor```and ```commissioner```, all representing a political topic.
 
 To leverage this property, the following method was tested to create additional training data with the same topic:
 
@@ -18,7 +18,7 @@ To leverage this property, the following method was tested to create additional 
 4. create a new document by replacing every occurrence of the keyword with the synonym
 5. add the new document to the training set
 
-## Practical Implementation
+## Practical Implementation {#sec:new-classes-practical}
 
 As a natural corpus, the wikipedia corpus and the news corpus without the documents from the test category was used, since this is all the data that would be available in this scenario.
 
@@ -85,7 +85,7 @@ This decomposition algorithm is only applied when the keyword is not in the base
 
 As a newly introduced category, the ```Sport``` category was arbitrary chosen. However, since the method will be evaluated against the same classifier and category without the additional documents, this choice is insignificant.
 
-Since a multinomial naive Bayes classifier performed best when trained with only 10 data points for each class (see [Chapter @sec:classifier-result]), this classifier will be trained and evaluated on the created data.
+Since a multinomial naive Bayes classifier performed best when trained with only 10 data points for each class (see [chapter @sec:classifier-result]), this classifier will be trained and evaluated on the created data.
 
 Since the performance of a multinomial naive Bayes classifier over a varying training set size was already evaluated in the previous chapter, the training data for all other classes is limited to 100 elements per class.
 

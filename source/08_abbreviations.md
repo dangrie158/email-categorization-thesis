@@ -22,6 +22,7 @@
 \textbf{t-SNE}             \> \textbf{t}-\textbf{D}istributed \textbf{S}tochastic \textbf{N}eighbor \textbf{E}mbedding \\  
 \textbf{COW}             \> \textbf{c}opy-\textbf{o}n-\textbf{w}rite \\  
 \textbf{CNN}             \> \textbf{C}onvolutional \textbf{N}eural \textbf{N}etwork \\  
+\textbf{ASCII}             \> \textbf{A}merican \textbf{S}tandard \textbf{C}ode for \textbf{I}nformation \textbf{I}nterchange \\  
 \end{tabbing}
 
 \newpage

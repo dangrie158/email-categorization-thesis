@@ -107,7 +107,7 @@ By calculating the average distance between the topic with the highest share and
 
 This leads to the assumption that documents were misgrouped, when the LDA model represented them by a mix of topics where two or more topics, one of which is the biggest part, have nearly the same share. However, using the variance over all topics in the representation, no such correlation could be found ([Figure @fig:avg-variance-lda]).
 
-![Average difference between the two biggest shares in a documents topics](source/figures/lda-avg-dist.pdf "difference between LDA topic shares"){width=80% #fig:avg-distance-lda}
+![Average difference between the two biggest shares in a documents topics](source/figures/lda-avg-dist.pdf "Difference between LDA topic shares"){width=80% #fig:avg-distance-lda}
 
 ![Average variance between the shares of all topics](source/figures/lda-avg-var.pdf "Variance in LDA topics"){width=80% #fig:avg-variance-lda}
 
