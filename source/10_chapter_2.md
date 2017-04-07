@@ -1,12 +1,12 @@
 # Related Work
 
-This section provides an overview over the technologies and algorithms used to implement and validate the classifiers presented in the next sections.
+This section provides an overview of the technologies and algorithms used to implement and validate the classifiers presented in the next sections.
 
 ## Tools
 
 ### SciPy [^scipy]
 
-SciPy is a set of python libraries for scientific computing. The main packages used in this thesis are:
+SciPy is a set of Python libraries for scientific computing. The main packages used in this thesis are:
 
 - *NumPy* a library for multi-dimensional arrays of arbitrary data types with efficient implementation of mathematic operations on this data.
 - *SciPy* a collection of mathematic operations on data including clustering, classification and regression algorithms.
@@ -17,26 +17,26 @@ SciPy is a set of python libraries for scientific computing. The main packages u
 
 ### Gensim [^gensim]
 
-Gensim is a python package by Radim Řehůřek that provides efficient implementations of machine learning algorithms for text based data. Gensims implementation of the LDA and word2vec algorithms is used in this thesis.
+Gensim is a Python package by Radim Řehůřek that provides efficient implementations of machine learning algorithms for text-based data. Gensim's implementation of the LDA and word2vec algorithms is used in this thesis.
 
 [^gensim]: https://radimrehurek.com/gensim/
 
 ### Keras [^keras]
 
-Keras is a high-level abstraction library written in python for Theano and TensorFlow backends. It provides a common interface for both libraries. Keras is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
+Keras is a high-level abstraction library written in Python for Theano and TensorFlow backends. It provides a common interface for both libraries. Keras is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
 
 [^keras]: https://keras.io
 
 ## Word2Vec {#sec:word2vec}
 
 Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by [@mikolov2013efficient].
-Classical NLP models often use simple bag of words (BOW) approaches to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.
+Classical NLP models often use the simple bag of words (BOW) approach to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.
 
 Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000 @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
 
 Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Single Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
 
-[^1]: good vector representation of words will have a small distance between words with a similar meaning and big distances for words with different meanings
+[^1]: good vector representation of words will have a small distance between words with a similar meaning and long distances for words with different meanings.
 
 ### Learning of the Word Embeddings
 
@@ -119,7 +119,7 @@ in which one can see the continuous product of the inner term over the $L({w}_{t
 
 #### Subsampling
 
-In a large corpus, there will be some phrases (word co-occurrences) that occur much more frequent compared to others. As the word vectors for the words in the phrase will change less with every training step as they "settle" to their optimal position, the model profits less and less from performing a training step on those phrases. Also, in a unprocessed context there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
+In a large corpus, there will be some phrases (word co-occurrences) that occur much more frequent compared to others. As the word vectors for the words in the phrase will change less with every training step as they "settle" towards their optimal position, the model profits less and less from performing a training step on those phrases. Also, in an unprocessed context, there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
 
 Therefore, @mikolov2013distributed suggest a subsampling of the words in the corpus based on their term frequency. They provide the formula
 
@@ -127,7 +127,7 @@ Therefore, @mikolov2013distributed suggest a subsampling of the words in the cor
 
 that calculates the probability for the word ${ w }_{ i }$ to be skipped in this training step. $f(w)$ is the term frequency of word $w$ and $t$ is a threshold which is defined as a hyperparameter of the model. Gensim's implementation of word2vec uses $0.001$ as a default value for $t$.
 
-Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the huffman tree). Therefore, it can be used as an easy way to scale down the impact of stopwords on the model without the need of a language-specific stopword set.
+Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the huffman tree). Therefore, it can be used as a simple way to scale down the impact of stopwords on the model without the need of a language-specific stopword set.
 
 #### Negative Sampling
 
