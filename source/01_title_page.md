@@ -12,7 +12,7 @@ This is the Latex-heavy title page.
         \vspace*{2.5cm}
 
         \huge
-        Email Classification using Word Vector Space Models
+        Email Classification using Word Embeddings
 
         \vspace{1.5cm}
 

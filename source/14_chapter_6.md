@@ -93,7 +93,7 @@ Since the performance of a multinomial naive Bayes classifier over a varying tra
 
 One can also see that when more data is available, the performance difference gets smaller and finally the extended classifier performs worse compared to the one trained only on the original data.
 
-![Comparison of a multinomial naive Bayes classifier when trained with and without created training data](source/figures/extended_performace.pdf "Extended classifier performance"){width=100% #fig:extended-performace}
+![Comparison of a multinomial naive Bayes classifier when trained with and without created training data](source/figures/extended_performace.pdf "Extended classifier performance"){width=90% #fig:extended-performace}
 
 ## Using the extended Data with other classifiers
 
@@ -107,6 +107,6 @@ When enough training data is available, a new word2vec model on the data can be 
 
 The expected accuracy of the compound classifier in the product of accuracies for each classifier.
 
-[Figure @fig:extended-performace-neg-sampling] shows the accuracy of a binary classifier with a varying number of training samples with and without the additionally generated training data when using 100 samples of each negative class. As one can see, the difference in accuracy between the classifiers is very close to [figure extended-performace].
+[Figure @fig:extended-performace-neg-sampling] shows the accuracy of a binary classifier with a varying number of training samples with and without the additionally generated training data when using 100 samples of each negative class. As one can see, the difference in accuracy between the classifiers is very close to [figure @fig:extended-performace].
 
-![Comparison of a multinomial naive Bayes classifier for a binary classification problem when trained with and without created training data](source/figures/extended_performace_only_negative.pdf "Extended classifier performance with negative sampling"){width=100% #fig:extended-performace-neg-sampling}
+![Comparison of a multinomial naive Bayes classifier for a binary classification problem when trained with and without created training data](source/figures/extended_performace_only_negative.pdf "Extended classifier performance with negative sampling"){width=90% #fig:extended-performace-neg-sampling}

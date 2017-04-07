@@ -2,7 +2,7 @@
 
 To test the assumption that news articles are a valid replacement for emails as stated in [chapter @sec:newscorpus], this chapter will evaluate the methods presented in the [chapters @sec:initial-labeling] [, @sec:auto-classification] [and @sec:new-classes] on the private email corpus of the author. However, due to privacy issues this corpus will not be released.
 
-The used inbox is sorted into 8 different folders through a mix of rule-based and manual sorting using macOS build-in ```Mail``` application. There also are 2 separate inboxes for work and study related mails which can be considered another 2 folders totaling 9 different folders.
+The used inbox is sorted into 8 different folders through a mix of rule-based and manual sorting using macOS' build-in ```Mail``` application. There also are 2 separate inboxes for work and study related mails which can be considered another 2 folders totaling 10 different folders.
 
 First the procedure of preprocessing the corpus is explained, then the methods will be evaluated on the preprocessed corpus.
 
@@ -10,7 +10,7 @@ First the procedure of preprocessing the corpus is explained, then the methods w
 
 The mails were exported in ```mbox``` format. This file format is not formally standardized and the POSIX standard defines only a general format in the *Output Files* section of the ```mailx``` program[^mailx]. This definition only specifies that mails always begin with the ```From``` token followed by a space, end with an empty line and that header and body are separated by a single, empty line. The messages itself follow RFC 2822 - *Internet Message Format*[^rfc-2822] with the extensions for non-ASCII text RFC 2045[^rfc-2045], RFC 2046[^rfc-2046] and RFC 2047[^rfc-2047] *Multipurpose Internet Mail Extensions (MIME)* part 1-3.
 
-Due to this lack of formal specification, the mails were preprocessed using the following steps:
+Due to the message format, the mails were preprocessed using the following steps:
 
 1. If the mail consists of multiple parts (e.g. the MIME-Type starts with ```multipart/```), recursively preprocess all parts as specified by RFC 2046.
 2. According to the ```Content-Transfer-Coding``` header, decode the content (e.g. ```quoted-printable``` or ```base64```).
@@ -23,6 +23,8 @@ Due to this lack of formal specification, the mails were preprocessed using the 
 
 Since neither the mbox format nor the RFCs specify an encoding for the message body, mbox can be seen as a binary format. To equalize the coding to UTF-8, the ```charset``` section of the ```Content-Type``` header was used. If not present, ASCII was assumed.
 
+The mbox format was parsed using the mailbox package in the python standard library[^mbox-lib].
+
 To save the preprocessed mails to disk, each email was written into a seperate line to allow for easy loading using gensim's ```LineSentence``` class[^textcorpus-class].
 
 [^mailx]: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/mailx.html
@@ -31,8 +33,9 @@ To save the preprocessed mails to disk, each email was written into a seperate l
 [^rfc-2046]: https://www.ietf.org/rfc/rfc2046.txt
 [^rfc-2047]: https://www.ietf.org/rfc/rfc2047.txt
 [^textcorpus-class]: https://radimrehurek.com/gensim/models/word2vec.html
+[^mbox-lib]: https://docs.python.org/2/library/mailbox.html
 
-## Corpus Statistics
+## Corpus Statistics {#sec:mail-corpus-stats}
 
 This subsection will present some properties of the corpus created by the preprocessing steps of the previous chapter.
 
@@ -98,9 +101,9 @@ Comparing the results to [figure @fig:class-performance] and [table @tbl:classif
 
 The SVM classifier using TF-IDF vectors has the best accuracy of all classifiers when trained on the complete training set closely followed by the likelihood maximization classifier.
 
-For very few training elements for each class, the advantage of the pre trained base model becomes once more visible with the CNN, likelihood maximization and the SVM classifier using summarized word2vec vectors outperforming the classifiers using TF-IDF vectors. Only the multinomial naive Bayes classifier performes as good in this scenario. The overall performance of the CNN is also once more particularly bad compared to all other classifiers.
+For very few training elements for each class, the advantage of the pre trained base model becomes once more visible with the CNN, likelihood maximization and the SVM classifier using summarized word2vec vectors outperforming the classifiers using TF-IDF vectors. Only the multinomial naive Bayes classifier performed as good in this scenario. The overall performance of the CNN is also once more particularly bad compared to all other classifiers.
 
-![Accuracy of different classifiers with a varying training set size.](source/figures/accuracy_mail_comparison.pdf "Accuracy of classifiers on the mail corpus"){width=100% #fig:mail-categorization}
+![Accuracy of different classifiers with a varying training set size.](source/figures/accuracy_mail_comparison.pdf "Accuracy of classifiers on the mail corpus"){width=90% #fig:mail-categorization}
 
 | Classifier            | Accuracy     |
 |-----------------------|--------------|
@@ -112,6 +115,22 @@ For very few training elements for each class, the advantage of the pre trained 
 | CNN                   |     0.913054 |
 Table: Result of different classifiers on the mail corpus {#tbl:mail-categorization}
 
+As noted in [chapter @sec:mail-corpus-stats], the big variance in class elements requires for a closer inspection of the classifier output to make sure the good performance in not mainly based on the few, big classes. [Table @tbl:mail-confusion] therefore shows the confusion matrix of the likelihood maximization classifier. As one can see, the accuracy is good for all classes since the highest value of each row is on the diagonal.
+
+| Class | 1     | 2       | 3       | 4      | 5       | 6     | 7     | 8       | 9      | 10     |
+|-------|-------|---------|---------|--------|---------|-------|-------|---------|--------|--------|
+| 1     | **9** |       0 |       0 |      0 |       0 |     0 |     0 |       0 |      0 |      1 |
+| 2     | 0     | **128** |       0 |      1 |       0 |     0 |     0 |       0 |      2 |      0 |
+| 3     | 1     |       0 | **283** |      1 |       4 |     0 |     0 |       0 |      0 |      0 |
+| 4     | 0     |       0 |       0 | **74** |      12 |     0 |     0 |       0 |      3 |      0 |
+| 5     | 1     |       0 |       1 |      9 | **714** |     0 |     0 |       5 |      1 |      0 |
+| 6     | 0     |       0 |       0 |      0 |       2 | **9** |     0 |       0 |      0 |      0 |
+| 7     | 0     |       0 |       0 |      0 |       0 |     0 | **8** |       0 |      0 |      0 |
+| 8     | 0     |       1 |       0 |      0 |       6 |     2 |     0 | **243** |      0 |      0 |
+| 9     | 2     |       0 |       0 |      0 |       2 |     0 |     0 |       0 | **13** |      0 |
+| 10    | 0     |       0 |       0 |      1 |       0 |     0 |     1 |       0 |      0 | **16** |
+Table: Confusion matrix of the likelihood maximization classifier. {#tbl:mail-confusion}
+
 In summary, the very comparable performance of all classifiers and the peculiarities in certain scenarios is another evidence for the exchangeability of emails and news articles when comparing machine learning algorithms that work with natural language.
 
 ### Training Data Creation
@@ -122,4 +141,4 @@ In summary, the very comparable performance of all classifiers and the peculiari
 
 Once again, the result is directly comparable to the respective result on the news corpus. While the break-even point between the two classifiers for the news corpus was between 70 and 80 training elements in the new class, it was between 80 and 90 elements in the test with the mail corpus. It is also worth mentioning that the maximum gain in accuracy is only around 5.8% on the mail corpus compared to the up to 15% on the news corpus.
 
-![Performance of the naive Bayes classifier with an extended training set.](source/figures/mail_extended_performace_only_negative.pdf "Extended classifier performance on the mail corpus"){width=100% #fig:mail-extended-performance}
+![Performance of the naive Bayes classifier with an extended training set.](source/figures/mail_extended_performace_only_negative.pdf "Extended classifier performance on the mail corpus"){width=90% #fig:mail-extended-performance}

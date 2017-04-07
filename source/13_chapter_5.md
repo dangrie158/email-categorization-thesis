@@ -107,7 +107,7 @@ The features found by this process are then classified by a single fully-connect
 
 [Figure @fig:text-cnn] visualizes the structure of the CNN.
 
-![Visualization of the CNN structure. Adapted from @kim2014convolutional](source/figures/text-cnn.pdf "CNN structure for text classification"){width=90% #fig:text-cnn}
+![Visualization of the CNN structure. Adapted from Kim (2014)](source/figures/text-cnn.pdf "CNN structure for text classification"){width=90% #fig:text-cnn}
 
 ### Practical Implementation
 
@@ -155,9 +155,9 @@ Interestingly, the SVM classifier using the summarized word2vec vector features 
 
 This result, however, is only calculated on the complete corpus with a rather large number of training elements in each category. To provide a more complete comparison of the classifier's performance, [figure @fig:class-performance] plots the accuracy of all classifiers when limited to a smaller number of training elements.
 
-The smaller training sets were created by truncating the training elements of each category to a maximum of $N={10, 50, 100, 500, 1000, 2000, 5000, 10000}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements ${90, 450, 900, 4500, 9000, 17938, 31311, 39379}$. The validation sets were not truncated, so that always the complete set was used during validation.
+The smaller training sets were created by truncating the training elements of each category to a maximum of $N=\{10$, $50$, $100$, $500$, $1000$, $2000$, $5000$, $10000\}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements $\{90$, $450$, $900$, $4500$, $9000$, $17938$, $31311$, $39379\}$. The validation sets were not truncated, so that always the complete set was used during validation.
 
-![Result of the classification comparison over a varying corpus size](source/figures/categorization_comparison.pdf){width=100% #fig:class-performance}
+![Result of the classification comparison over a varying corpus size](source/figures/categorization_comparison.pdf){width=90% #fig:class-performance}
 
 As one can see, the SVC using summarized word2vec document vectors and the maximum likelihood classifier perform best over the range from 450 to 4500 documents in the training set (50 and 500 documents per category respectively).
 
@@ -173,7 +173,7 @@ With the memory conserving implementation of the derived word2vec models this cl
 
 Another interesting observation of this experiment which shall not go unmentioned is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
 
-![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=100% #fig:w2vdimen-comparison}
+![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=90% #fig:w2vdimen-comparison}
 
 As one can see, using a base model with doubled dimensionality increases the performance of the SVM and the CNN classifier only slightly and in some cases, for the likelihood maximization even for all sizes of the training set, even worse.
 

@@ -92,7 +92,7 @@ Using this loss function, the model can be trained with any back-propagating los
 
 [^2]: https://code.google.com/archive/p/word2vec/
 
-### word2vec Optimizations and Parameters
+### Optimizations and Parameters
 
 #### Hierarchical Softmax
 
@@ -102,8 +102,7 @@ As stated earlier, the computation of the hidden layer state $\vec{h}$ can be im
 
 To overcome this issue, the hierarchical version of the softmax function (@morin2005hierarchical and @mnih2009scalable) can be used (@mikolov2013efficient). Hierarchical softmax uses a binary tree (more specifically a huffman tree to get an optimal prefix coding for more frequent tokens) where every token, in this case every word in the vocabulary, is a leaf of the tree ([Figure @fig:bintree]). In a balanced binary tree, the depth of each leaf is limited to $\left\lceil {log}_{2}(N)\right\rceil$ where $N$ is the number of leafs. Since a huffman tree optimizes the depth of its leaves by their frequency, the average depth is also limited to this value.
 
-![An example binary tree for a vocabulary with $V$ words. ${w}_{v}$ represent the words in the vocabulary  ([@rong2014word2vec])](source/figures/binary-tree.pdf "Binary tree for a vocabulary"){#fig:bintree}
-
+![An example binary tree for a vocabulary with $V$ words. ${w}_{v}$ represent the words in the vocabulary (Rong (2014))](source/figures/binary-tree.pdf "Binary tree for a vocabulary"){#fig:bintree}
 The hierarchical softmax approach now uses each branch of the tree as a normalized probability. The final probability for the leaf $l$ is calculated by multiplying each branch along the direct path of the tree up to to the node $l$. The Paper @mnih2009scalable formulates this strategy as follows:
 
 > This setup replaces one $N$-way choice by a sequence of $O(log N)$ binary choices.
@@ -118,7 +117,7 @@ in which one can see the continuous product of the inner term over the $L({w}_{t
 
 @rong2014word2vec and @yinhierarchical go into great detail on how this formula can be understood and how it can be used during the learn phase of the model.
 
-### Subsampling
+#### Subsampling
 
 In a large corpus, there will be some phrases (word co-occurrences) that occur much more frequent compared to others. As the word vectors for the words in the phrase will change less with every training step as they "settle" to their optimal position, the model profits less and less from performing a training step on those phrases. Also, in a unprocessed context there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
 
@@ -130,7 +129,7 @@ that calculates the probability for the word ${ w }_{ i }$ to be skipped in this
 
 Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the huffman tree). Therefore, it can be used as an easy way to scale down the impact of stopwords on the model without the need of a language-specific stopword set.
 
-### Negative Sampling
+#### Negative Sampling
 
 Negative sampling is another approximation strategy to avoid the expensive calculation of the softmax activation function. Negative sampling was introduced by @mikolov2013distributed. The idea is based on the noise-contrastive estimation (NCE) by @mnih2013learning. However, while NCE tries to estimate the log-probability $log(p(y|X))$, word2vec only is concerned about learning good vector representations for the words in the vocabulary. The log-probability at the output layer is only used while learning. Therefore, the NCE approximation is further simplified, while the word vectors retain their quality.
 
@@ -166,7 +165,7 @@ Note that LDA uses a bag of words assumption for the documents, so the order of 
 
 In the formal plate notation the generating process with $D$ documents, each containing $N$ words can be described by [figure @fig:ldaplate] where each plate is the repeated draw of a value from the distribution.
 
-![Plate notation of the LDA generative process. Based on {@wayneldatut}](source/figures/lda-plate.pdf "Plate notation of the LDA generative process"){#fig:ldaplate}
+![Plate notation of the LDA generative process. Based on Lee and Singh (2013)](source/figures/lda-plate.pdf "Plate notation of the LDA generative process"){#fig:ldaplate}
 
 ### Learning
 
