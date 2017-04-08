@@ -24,17 +24,17 @@ Among the simple vectorization techniques is the term frequency (TF) vectorizer,
 
 Since both, the TF and TF-IDF vectorizer, do not order the words according to their appearance in the vectorized document, they both represent the document as a bag of words.
 
-@basavaraju2010novel have successfully demonstrated the usefulness of such simple vectorizers when clustering mail data for the binary classification task spam detection. However, these vector representations use simple representations for the words. Since each word is only encoded as a *count*, each word can be considered to have the same distance to each other. Therefore, the tokens `Dog`, `Cat` and `Car` all have the same distance to each other, since their representations in the vector space are all orthogonal.
+@basavaraju2010novel have successfully demonstrated the usefulness of such simple vectorizers when clustering email data for the binary classification task of spam detection. However, these vector representations use simple representations for the words. Since each word is only encoded as a *count*, it can be considered to have the same distance to all other words in the vocabulary. Therefore, the tokens `Dog`, `Cat` and `Car` all have the same distance to each other, since their representations in the vector space are all orthogonal.
 
 ### Document Vectors from word2vec {#sec:clustersum}
 
 Since the objective of word2vec is to learn good vector representations of the words in the corpus, a natural idea is to use these embeddings in the vectorization of the documents.
 
-A simple way to create a document representation from word vectors is to calculate the sum of all word vectors that appear in the document. This yields document vectors whose length are dependent on the number of words in the document. Since the length of a document is generally not an important feature of the document ([@Manning:IntroductionToInformationRetrieval:2008, pp. 129-131]), the vector is also normalized by its length. The vectorization rule is then given by (@sumword2doc) where $K$ is the number of words in the document and $w2v(x)$ is the vector for word $x$ in the word2vec model.
+A simple way to create a document representation from word vectors is to calculate the sum of all word vectors that appear in the document. This yields document vectors whose length are dependent on the number of words in the document. Since the length of a document is generally not an important feature of the document ([@Manning:IntroductionToInformationRetrieval:2008, pp. 129-131]), the vector is also normalized to a length of 1. The vectorization rule is then given by (@sumword2doc) where $K$ is the number of words in the document and $w2v(x)$ is the vector for word $x$ in the word2vec model.
 
 (@sumword2doc) $$ \vec { d } =\frac { 1 }{ K } \sum _{ k=1 }^{ K }{ w2v({ w }_{ d,k }) } $$
 
-Due to the associative property of the summation of the vectors, the document vector loses all information about in which order the words appeared. Therefore, this technique also uses a BOW approach.
+Due to the associative property of the summation of the vectors, the document vector loses all information about the order the words appeared in. Therefore, this technique also uses a BOW approach.
 
 To take into consideration that not all words have the same significance, the inverse document frequency can be used to weight individual words just like in the TF-IDF vector. (@sumword2devidf) shows the vectorization rule with the IDF of each word considered.
 
@@ -44,15 +44,15 @@ To take into consideration that not all words have the same significance, the in
 
 A more sophisticated approach to generate document vectors from word2vec's word vectors is *Paragraph Vector* which was presented as an extension of word2vec by Quoc Le and Thomas Mikolov (-@le2014distributed).
 
-*Paragraph Vector* learns vector representations for a text of variable length by using a second projection matrix $D$ alongside the projection matrix of the words $Wi$ where each paragraph is represented by a row. The matrix $D$ therefore has a dimensionality of $N \times k$ where N is the number of paragraphs in the corpus. The rest of the network uses the same architecture as a normal word2vec model. The output of the first layer is calculated by either concatenating or averaging the row of the document matrix that represents the current paragraph to the usual output of the first layer in a classical word2vec model. The paragraph row of $D$ can be seen as another word that is in every context while learning the paragraph. The row can, therefore, be seen as a memory that is used for the whole paragraph. Since the number of parameters that need to be learned by the model increases due to the extra paragraph matrix by $N \times k$, however, @le2014distributed point out that learning the extra parameters is still efficient, since the architectural sparsity constraint of only one active row of $D$ at a time.
+*Paragraph Vector* learns vector representations for a text of variable length by using a second projection matrix $D$ alongside the projection matrix of the words $Wi$ where each paragraph is represented by a row. The matrix $D$ therefore has a dimensionality of $N \times k$ where N is the number of paragraphs in the corpus. The rest of the network uses the same architecture as a normal word2vec model. The output of the first layer is calculated by either concatenating or averaging the row of the document matrix that represents the current paragraph to the usual output of the first layer in a classical word2vec model. The paragraph row of $D$ can be seen as another word that is in every context while learning the paragraph. The row can, therefore, be seen as a memory that is used for the whole paragraph. The number of parameters that need to be learned by the model increases due to the extra paragraph matrix by $N \times k$, however, @le2014distributed point out that learning the extra parameters is still efficient, since the architectural sparsity constraint of only one active row of $D$ at a time.
 
 ### Data visualization
 
-Visualizing the output of the vectorization can be a helpful way to determine the quality of the produced vectors. For a quick overview of where the document vectors point to in their embedding vector space and which vectors are neighbors to each other, a two-dimensional representation that can easily be visualized is desirable. However, this requires a dimensionality reduction from the high-dimensional representation vector space to a low-dimensional visualization vector space. This dimensionality reduction needs to preserve the general structure of the high-dimensional vectors in their low-dimensional representatives.
+Visualizing the output of the vectorization can be a helpful way to determine the quality of the produced vectors. For a quick overview of where the document vectors point to in their embedding vector space and which vectors are neighbors to each other, a two-dimensional representation that can easily be visualized is desirable. However, this requires a dimensionality reduction from the high-dimensional representation vector space to a low-dimensional visualization vector space. This dimensionality reduction needs to preserve the general structure of the high-dimensional vectors in their low-dimensional representatives as good as possible.
 
 One technique that is specifically developed for visualizations of high-dimensional data is *t-Distributed Stochastic Neighbor Embedding* (t-SNE) (@maaten2008visualizing). It provides state-of-the-art, structure-preserving dimensionality reduction and is highly scalable. The implementation used is created by Dmitry Ulyanov which is scalable to multiple CPU cores (-@ulyanov2016multicore).
 
-[Figure @fig:tsne-tfidf] [- @fig:tsne-d2v] show the visualization of the resulting document vectors using the vectorization techniques described before and a t-SNE dimensionality reduction on the news corpus presented in [chapter @sec:newscorpus]. Each category is limited to 500 random documents.  The word2vec vector summation and Paragraph Vector model used the news corpus and Wikipedia corpus presented in the last chapter to learn the word embeddings. As one can see, even in the low-dimensional representation some correlation between the classes of adjacent elements can be observed which justifies the examination of the quality of the output of clustering algorithms on these vectors. The visualization for the Paragraph Vectors shows only little correlation between the elements of one class; however, this may be due to a latent structure in the set of vectors which causes the t-SNE dimensionality reduction to perform poorly on this set for this task. An indicator for this may be the dense hotspot on the left, containing many vectors in a small area.
+[Figure @fig:tsne-tfidf] [- @fig:tsne-d2v] show the visualization of the resulting document vectors using the vectorization techniques described before and a t-SNE dimensionality reduction on the news corpus presented in [chapter @sec:newscorpus]. Each category is limited to 500 random documents.  The word2vec vector summation and Paragraph Vector model used the news corpus and Wikipedia corpus presented in the last chapter to learn the word embeddings. As one can see, even in the low-dimensional representation, some correlation between the classes of adjacent elements can be observed which justifies the examination of the quality of the output of clustering algorithms on these vectors. The visualization for the Paragraph Vectors shows only little correlation between the elements of one class; however, this may be due to a latent structure in the set of vectors which causes the t-SNE dimensionality reduction to perform poorly on this set for this task. An indicator for this may be the dense hotspot on the left, containing many vectors in a small area.
 
 ![Visualization of document vectors created using TF-IDF vectorization and t-SNE dimensionality reduction](source/figures/tsne_tfidf.pdf "Visualization of TF-IDF vectors"){width=90% #fig:tsne-tfidf}
 
@@ -72,9 +72,9 @@ The following clustering algorithms were used for the evaluation:
 
 Furthermore, *DBSCAN* and agglomerative clustering with *average* linking were benchmarked, however, both turned out to perform particularly bad with a performance worse or equal to the random assignment of the clusters.
 
-Each algorithm was configured to create 100 clusters which then were evaluated.
+Each algorithm was configured to create 100 clusters which were then evaluated.
 
-For this evaluation the corpus was trimmed so that each category has the same number of documents, thus equalizing the a priori probability. To avoid the removal of too many documents, the smallest category with less than 1000 documents, *Aktuell* was ignored completely.
+For this evaluation, the corpus was trimmed so that each category has the same number of documents, thus equalizing the a priori probability. To avoid the removal of too many documents, the smallest category with less than 1000 documents, *Aktuell* was ignored completely.
 
 ### Performance Measure
 
@@ -88,11 +88,11 @@ The bad results for the TF-IDF vectors can be explained by the simplicity of the
 
 |                 |  TF-IDF | word2vec summation | Paragraph Vectors |
 |-----------------|---------|--------------------|-------------------|
-| k-Means         |   0.099 |              0.421 |             0.213 |
-| Ward            |   0.173 |              0.471 |             0.202 |
-| Birch           |   0.209 |              0.468 |             0.340 |
-| Average Linkage |   0.010 |              0.028 |             0.011 |
-| DBSCAN          |   0.037 |              0.017 |             0.057 |
+| k-Means         |   0.099 |          **0.421** |             0.213 |
+| Ward            |   0.173 |          **0.471** |             0.202 |
+| Birch           |   0.209 |          **0.468** |             0.340 |
+| Average Linkage |   0.010 |          **0.028** |             0.011 |
+| DBSCAN          |   0.037 |              0.017 |         **0.057** |
 Table: Result of different clustering algorithms on the vectors of the vectorizers {#tbl:clustering-results}
 
 ## LDA Topics
@@ -142,4 +142,4 @@ The results of the clustering experiment show, that the summation of word vector
 
 The LDA model proved to create meaningful topics, since one could cluster the documents with the best result in all experiments just by using the topic that contributed the most to the document, effectively high-pass filtering the vector elements. However, using the complete, unfiltered vector decreased the performance, probably due to noise introduced by the smaller components in the vector.
 
-The best result was a homogeneity of just over 50% for 100 clusters and 10 classes in the ground truth. By reducing the number of categories to 4 while keeping all other parameters, the homogeneity could reach over 71%. Especially for the categorization into fewer classes, this technique can provide the user with a big reduction in workload when initially sorting a inbox into multiple folders. However, any other algorithm that is trained on a corpus using the labels provided by this technique can, at best, only reach an accuracy equal to the homogeneity.
+The best result was a homogeneity of just over 50% for 100 clusters and 10 classes in the ground truth. By reducing the number of categories to 4 while keeping all other parameters, the homogeneity could reach over 71%. Especially for the categorization into fewer classes, this technique can provide the user with a big reduction in workload when initially sorting a inbox into multiple folders. However, any other algorithm that is trained on a corpus using the labels provided by this technique can, at best, only reach an accuracy equal to the homogeneity of the clusters.

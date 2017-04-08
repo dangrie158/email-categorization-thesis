@@ -6,9 +6,9 @@ For the above reasons, a way to automatically sort incoming Mail is desired. Thi
 
 ## Approach {#sec:approach}
 
-Vector space models for text classification have gained much attention in the last years since they can be trained on unlabeled data and learn a language model where associations between words can be represented by linear operations in the vector space (@mikolov2013efficient). This thesis will, therefore, evaluate the performance of different classifiers, all using word vectors from a word2vec model, against each other to compare the performance. Also, different state-of-the-art text classification techniques like SVD with TF-IDF vectors will be used as a comparison to find if the classifiers benefit from a vector space model.
+Word embeddings for text classification have gained much attention in the last years since they can be trained on unlabeled data and learn a language model where associations between words can be represented by linear operations in the vector space (@mikolov2013efficient). This thesis will, therefore, evaluate the performance of different classifiers, all using word vectors from a word2vec model, against each other to compare the performance. Also, different state-of-the-art text classification techniques like SVD with TF-IDF vectors will be used as a comparison to find if the classifiers benefit from the continuous vector space model.
 
-Due to the lack of a readily available, tagged email corpus with mixed content (personal and private), the methods will instead first be developed and evaluated on a news corpus that is built by crawling a set of German news sites. Later, the strategies will also be assessed on the author's private mail corpus. However, this corpus will, in contrast to the generated news corpus, not be published due to privacy.
+Due to the lack of a readily available, tagged email corpus with mixed content (personal and private), the methods will instead first be developed and evaluated on a corpus that is built by crawling a set of German news sites. Later, the strategies will also be assessed on the author's private mail corpus. However, this corpus will, in contrast to the generated news corpus, not be published due to privacy.
 
 ## Non-goals
 
@@ -16,7 +16,7 @@ This thesis is only concerned about the text classification task on the email bo
 
 However, it should not go unmentioned that, in some cases, the full body of the mail may not be available, for example, due to encryption.
 
-It also is worth noting that this available data may be high-quality features as, for instance, a thread probably is often about a single topic and therefore all of its messages would be of the same class.
+It also is worth noting that this available data may be high-quality features as, for instance, a thread probably is often about a single topic and therefore all of its messages would be associated to the same class.
 
 <!--The methods that will be analyzed will all be based on a word2vec model [@mikolov2013efficient].
 For the automatic classification into categories that already have a large tagged training set available (e.g. different folders in the user's inbox), a simple strategy may suffice. This simple strategy may use a large word2vec model as a neutral base and inherits a concrete model for each category by learning the tagged data. The classification task then simply maximizes the log-likelihood of a new document by minimizing the calculated loss in each model.
@@ -28,8 +28,8 @@ For a more fine-grained classification and in other cases where not enough train
 
 The main contributions of this thesis can be summed up in the following points:
 
-- A memory efficient implementation of derived word2vec models that allow multiple models to be loaded at the same time in memory
-- An implementation of an optimized algorithm based on the work of @koehn2003empirical to split compound words of synthetic languages into their parts
+- A memory efficient implementation of derived word2vec models that allow multiple models to be loaded in memory at the same time.
+- An implementation of an optimized algorithm based on the work of @koehn2003empirical to split compound words of synthetic languages into their parts.
 - A German news corpus, containing >100,000 articles with rich information such as author, date, normalized text and 11 different labels[^corpus-repo].
 - A method to increase the accuracy of classifiers when only little training data is available by creating new training sets using only unsupervised algorithms and unlabeled data.
 - Empirical evidence that news articles can be utilized as a more available alternative for emails when working with natural language machine learning algorithms.

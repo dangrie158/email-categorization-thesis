@@ -8,7 +8,7 @@ When enough data is available, a new derived word2vec model can be trained and u
 
 The general idea is that language is very rich in a way that often words can be replaced without changing the meaning of the sentence. The words that can be substituted for each other are then synonymous. Furthermore, sometimes words can be replaced with other words that are not synonymous; however, the sentence is still about the same topic. For example, a document about soccer where each occurrence of the word soccer is replaced with baseball is still about the overall theme sports.
 
-This connection between words is also reflected by the distributional hypothesis (@harris1954distributional) and therefore is learned by a word2vec model. In fact, word2vec learns word vectors that have a short distance (for cosine similarity) to words that are synonymous or thematically related. For example, in the model learned on the Wikipedia corpus, closest to the vector of the word ```president``` are the vectors for the words ```chairman```, ```chancellor```and ```commissioner```, all representing a political topic.
+This connection between words is also reflected by the distributional hypothesis (@harris1954distributional) and therefore is learned by a word2vec model. In fact, word2vec learns word vectors that have a short distance (for cosine similarity) to words that are synonymous or thematically related. For example, in the model learned on the Wikipedia corpus, closest to the vector of the word ```president``` are the vectors for the words ```chairman```, ```chancellor``` and ```commissioner```, all representing a political topic.
 
 To leverage this property, the following method was tested to create additional training data with the same theme:
 
@@ -20,7 +20,7 @@ To leverage this property, the following method was tested to create additional 
 
 ## Practical Implementation {#sec:new-classes-practical}
 
-As a natural corpus, the Wikipedia corpus and the news corpus without the articles from the test category were used, since this is all the data that would be available in this scenario.
+As a natural corpus, the Wikipedia corpus and the news corpus without the articles from the test category were used, since this is all the data that is available in this scenario.
 
 To sort the tokens by their relevance, the TF-IDF of every token could be calculated. However, this would require a pass over the complete natural corpus to find the IDFs. Therefore the total term frequency (TTF) over the corpus was used in place of the IDF since this information is already available in the word2vec model due to the construction of the huffman tree for the hierarchical softmax optimization and the subsampling. The significance of a word is therefore calculated by (@tf-ittf) with $tf_d$ being the term frequency in the document and $ttf$ being the word frequency in the complete corpus.
 
@@ -32,7 +32,7 @@ The ten most relevant tokens according to this measure were then used as keyword
 
 The test was performed on the German Wikipedia and news corpus. German is a synthetic, fusional language, which often forms specific words using a composition of unspecific words. For example, the word ```orange juice``` is translated into German ```Orangensaft```. This synthetic property proved to be a problem for the algorithm described above since it depends on the keywords being present in the corpus to find synonyms for it. However, often specific words that are a composition of multiple words were picked as keywords due to their low TTF. Therefore, often the keyword did not appear in the word2vec model, and thus, no new document could be created.
 
-To overcome this issue, the words need to be decomposed and split into their more general parts. For the word ```Orangensaft``` these parts are ```Orange``` and ```Saft```.
+To overcome this issue, the words need to be decomposed and split into their more general parts. For the word ```Orangensaft```, these parts are ```Orange``` and ```Saft```.
 
 The algorithm used for splitting the words can be described by the following pseudocode:
 
@@ -47,7 +47,7 @@ The algorithm used for splitting the words can be described by the following pse
     forever:
       current_partition = []
       while end < len(word):
-        if word[start:end] in vocabulary and not in parts:
+        if word[start:end] in vocabulary and not in partitions:
           current_partition.push(word[start:end])
           start = end
         end++
@@ -66,7 +66,7 @@ Each found partition is then scored, and the partition with the highest score is
 
 (@geom-mean-ttf-len) $$\underset { S }{ argmax } ({ \prod_{ { p }_{ i }\in S }^{  }{ count({ p }_{ i }) * len({ p }_{ i }) }  }^{ \frac { 1 }{ n }  })$$
 
-To get synonyms for the compound word from the found partition, the sum of the vectors of the parts is used to find close vectors in the embedding space. This summarized vector works because the word2vec model learns linear relations between words as demonstrated by @mikolov2013efficient.
+To get synonyms for the compound word from the found partition, the sum of the vectors of the parts is used to find close vectors in the embedding space. This summarized vector works for finding synonyms because the word2vec model learns linear relations between words as demonstrated by @mikolov2013efficient.
 
 [Table @tbl:keyword-synonymes] shows some examples of the output of this algorithm.
 

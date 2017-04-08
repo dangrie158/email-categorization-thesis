@@ -4,7 +4,7 @@ As noted in [Chapter @sec:approach], the approaches in the next chapter are deve
 
 One of the biggest publicly available dataset consisting of real emails is the Enron dataset (@klimt2004introducing). The corpus consists of 619,446 emails from 158 users. The inboxes contain the original folder structure that was created by the original owner of the inbox. However, the use of the Enron corpus for development poses some difficulties:
 
-- **Corpus Size**: While the corpus itself is large, the average number of messages per user is only 757 (@klimt2004introducing). This number drops even more when ignoring messages in folders that are meta-folders of the inbox that don't need classification. These folders include sent items, deleted items, and notes of the user. Filtering out these items, the number of messages in the complete corpus drops to 186,071. Since the task of folder classification is a per-user task because each user has their own way of managing their inbox, this figure is more important than the overall corpus size. Increasing the amount of data for one user by merging in messages from other users poses the risk of contaminating the inherent sorting strategy the user used, and the algorithm needs to learn. Therefore, this task would require manual and careful work to preserve this structure.
+- **Corpus Size**: While the corpus itself is large, the average number of messages per user is only 757 (@klimt2004introducing). This number drops even more when ignoring messages in folders that are meta-folders of the inbox that don't need classification. These folders include sent items, deleted items, and notes of the user. Filtering out these items, the number of messages in the complete corpus drops to 186,071. Since the task of folder classification is a per-user task because each user has their own way of managing their inbox, the number of messages per user is more important than the overall corpus size. Increasing the amount of data for one user by merging in messages from other users poses the risk of contaminating the inherent sorting strategy the user used, and the algorithm needs to learn. Therefore, this task would require manual and careful work to preserve this structure.
 - **The Corpus is a Snapshot of a Moment**: Users tend to delete emails that contain no longer relevant information. This tendency can be seen by the fact that the meta-folders ```deleted_items``` contain 57,653 messages summed up over all users. These messages still would need classification when received. However, they lost their true label since the original folder can not be deduced anymore. Under the thesis that users tend to delete emails that no longer are relevant or contain only little information (such as short yes/no replies), the corpus is preprocessed in a way that maximizes the amount of information in each mail which may affect the classification performance in a positive way. However, since this preprocessing was done manually and is not available in a fully automated application, the results would be distorted.
 
 There are also other corpora available; however, none could be found that has a bigger or even similar size to the Enron corpus and provide a similar *real life* structure. The Sarah Palin email dataset (@palin2011) for example does not provide any label at all since it was digitized from printouts of the original emails. Therefore all structure of the original inbox is lost.
@@ -39,9 +39,9 @@ In the next step, each previously unvisited article is loaded via the link extra
 
 ## Data Extraction
 
-To work with the news article the text and other useful information needs to be extracted from the articles full web page. This step happens at crawl time and is done using the Node.js module *unfluff*[^6] which is based on *python-goose*[^7] which in turn is based on *goose*[^8]. Goose is an article extractor that is specifically designed to extract information from news articles.
+To work with the news article the text and other useful information needs to be extracted from the article's full web page. This step happens at crawl time and is done using the Node.js module *unfluff*[^6] which is based on *python-goose*[^7] which in turn is based on *goose*[^8]. Goose is an article extractor that is specifically designed to extract information from news articles.
 
-The information unfluff tries to extract from the articles page are numerous. Among the most important for a machine learning corpus are:
+The information unfluff tries to extract from the article's page are numerous. Among the most important for a machine learning corpus are:
 
 - the title of the article
 - the publishing date
@@ -56,13 +56,13 @@ All the data that is extracted by unfluff is saved in the database alongside the
 
 ## Article Labeling
 
-Online news sites often order their articles in categories, e.g. Politics, Technology. However, unfluff does extract this information as it depends heavily on the layout of the site. Another problem is that different news sites label their categories differently, although the categories contain similar articles. For example, while one newspaper may name a category about domestic politics *Politik Deutschland*, another may call it *Innenpolitik*.
+Online news sites often order their articles in categories, e.g. Politics, Technology. However, unfluff does not extract this information as it depends heavily on the layout of the site. Another problem is that different news sites label their categories differently, although the categories contain similar articles. For example, while one newspaper may name a category about domestic politics *Politik Deutschland*, another may call it *Innenpolitik*.
 
 To overcome these issues, a way to automatically sort the news articles into a list of predefined categories is needed. The List of categories used can be seen in [Table @tbl:categories] and was assembled by finding the lowest common denominator across all news sites in the list of sources. While this list was found independently, a strong similarity with the list of topics from @can2016entwicklung can be noticed. This fact reinforces the confidence that the found list of labels is a good fit for German news articles.
 
-To label the article in an automated way, @can2016entwicklung used news archives with labeled data to train a classifier using a support vector machine (SVM). However, the objective then was to filter out political articles. Since this corpus will be utilized for training and validation, the true label can not be predicted by another classifier, since this would result in a corpus that could only be used to train models that are at best as good as the original corpus used for labeling.
+To label the article in an automated way, @can2016entwicklung used news archives with labeled data to train a classifier using a support vector machine (SVM). However, the objective then was to filter out political articles. Since this corpus will be utilized for training and validation, the true label can not be predicted by another classifier, since this would result in a corpus that could only be used to train models that are at best as good as the original classifier used for labeling.
 
-Luckily it was observed that all used news sites use URLs that represent the internal structure and therefore a topic as part of the URL. Thus, a regular expression for each provider can be used to filter out this information. Since the resulting matches vary widely between but also within different sites, they get mapped to one of the 11 predefined labels as the next step. [Table @tbl:categories] shows examples of the extracted topics and this mapping in the column *Example Subtopics*. Some of the topics could not be mapped to one of the labels, for instance very special topics that only appear once, and others do contain articles without any news relation, for example ads. These topics were mapped to the *Ignore* category.
+Luckily it was observed that all used news sites use URLs that represent the internal structure and therefore a topic is part of the URL. Thus, a regular expression for each provider can be used to filter out this information. Since the resulting matches vary widely between but also within different sites, they get mapped to one of the 11 predefined labels as the next step. [Table @tbl:categories] shows examples of the extracted topics and this mapping in the column *Example Subtopics*. Some of the topics could not be mapped to one of the labels, for instance very special topics that only appear once, and others do contain articles without any news relation, for example ads. These topics were mapped to the *Ignore* category.
 
 While this approach requires manual work every time one of the sites changes their URL scheme or adds a new topic, during the collection of the corpus only one news site changed the URL scheme (the IT-News portal golem disabled access via unencrypted HTTP connections) and 11 new topics were added in total, most of which were special topics that were mapped to the *Ignore* category.
 
@@ -100,11 +100,9 @@ Sonstiges       miscellanea         ```allgemein```, ```schlusslicht```,
 Lokal           local               ```kommunalpolitik```, ```nrw```,
                                     ```hamburg```          
 
-Lifestyle       lifestyle           ```shopping```, ```stil```,
-                                    ```entdecken```              
+Lifestyle       lifestyle           ```shopping```, ```stil```   
 
-*Ignore*                            ```icon```, ```videoblog```,
-                                    ```anzeigen```                      
+*Ignore*                            ```icon```, ```videoblog```             
 -------------  -------------------  ----------------------------------
 Table: The categories used as Labels  {#tbl:categories}
 
@@ -136,7 +134,7 @@ The solution to this problem is called phrase detection. A phrase detection may 
 
 (@phrasedetection) $$score({ w }_{ i },{ w }_{ j })=\frac { count({ w }_{ i }{ w }_{ j })-\delta  }{ count({ w }_{ i })\times count({ w }_{ j }) } $$
 
-Normalization of text can include further steps like stemming, lemmatization or stopword filtering. However, to keep the corpus universally useable, these steps were not performed at this stage, as they may have no or even a negative impact on the performance of some classification algorithms since they remove information. However, some of the approaches in the next chapter do filter stopwords. The use of such a filter is mentioned in the corresponding sections.
+Normalization of text can include further steps like stemming, lemmatization or stopword filtering. However, to keep the corpus universally useable, these steps were not performed at this stage, as they may have no or even a negative impact on the performance of some classification algorithms since they generally remove information. However, some of the approaches in the next chapter do filter stopwords. The use of such a filter is mentioned in the corresponding sections.
 
 For normalizing and tokenizing the news article texts, the *normalizr* package[^normalizr] is used. The normalization to the UTF-8 codec is done using pythons build-in *codecs* package. The phrase detection is done in a later step using gensim's *phrases* class[^phrases] that uses the algorithm described above.
 
@@ -145,7 +143,7 @@ For normalizing and tokenizing the news article texts, the *normalizr* package[^
 
 ## The Wikipedia Corpus {#sec:wikipedia-corpus}
 
-The word2vec model presented in [Chapter @sec:word2vec] tries to learn good word representations by leveraging the distributional hypothesis and word co-occurrences. Previously unseen words, however, get initialized with a random vector that is then adjusted by the learning algorithm. This process yields vectors that are mainly based on their random initial state for words that occur only a few times in the corpus. For this reason, gensim's word2vec implementation offers the ```min_count``` parameter with a default value of 5. The parameter specifies a lower bound to how often a word needs to be observed in the corpus. Words which appear more infrequent are not learned by the model. This requirement offers an easy way to make sure, the vectors learned by the model are not mostly based on a random state, but are adjusted by a minimum number of training steps.
+The word2vec model presented in [Chapter @sec:word2vec] tries to learn good word representations by leveraging the distributional hypothesis and word co-occurrences. Previously unseen words, however, get initialized with a random vector that is then adjusted by the learning algorithm. This process yields vectors that are mainly based on their random initial state for words that occur only a few times in the corpus. For this reason, gensim's word2vec implementation offers the ```min_count``` parameter with a default value of 5. The parameter specifies a lower bound to how often a word needs to be observed in the corpus before adding it to the vocabulary. Words which appear more infrequent are not learned by the model. This requirement offers an easy way to make sure, the vectors learned by the model are not mostly based on a random state, but are adjusted by a minimum number of training steps.
 
 However, due to the relatively low corpus size (13,233,740 words after stopword filtering[^stopword-filtering] with 377,998 unique tokens, only 108,900 of which appear more than 5 times), using this lower bound, the news corpus could only be used to learn vector representations for ~29% of the words that appear in the corpus. [Figure @fig:wordfrequencies] shows a histogram of the word frequency of each unique word in the corpus.
 

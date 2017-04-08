@@ -21,7 +21,7 @@ Due to the message format, the emails were preprocessed using the following step
 7. Normalize whitespaces by replacing every occurrence of one or more whitespaces with a single space.
 8. Transcode to Unicode (UTF-8).
 
-Since neither the mbox format nor the RFCs specify an encoding for the message body, mbox can be seen as a binary format. To equalize the coding to UTF-8, the ```charset``` section of the ```Content-Type``` header was used. If not present, ASCII was assumed.
+Since neither the mbox format nor the RFCs specify an encoding for the message body, mbox can be seen as a binary format. To equalize the coding to UTF-8, the ```charset``` section of the ```Content-Type``` header was used to find the current encoding. If not present, ASCII was assumed.
 
 The mbox format was parsed using the mailbox package in the Python standard library[^mbox-lib].
 
@@ -74,9 +74,9 @@ The big increase in homogeneity compared to the news corpus, although almost the
 
 The distribution of the computer generated emails can be seen in the plot of the t-SNE projection of the document vectors (summarized word2vec vectors, [figure @fig:mailw2v-clustering]). The dense orange blob in the middle is the representation of all notification emails which has only a few outliers.
 
-Furthermore, the clustering using and LDA model and picking the topic with the largest share as cluster yielded again the best homogeneity in the clusters with a value of 0.907.
+Furthermore, the clustering using an LDA model and picking the topic with the largest share as cluster yielded again the best homogeneity in the clusters with a value of 0.907.
 
-However, independent on the increase in homogeneity, the clustering techniques show comparable results, hinting that news articles and emails are exchangeable when comparing the performance of clustering methods.
+However, independent of the increase in homogeneity, the clustering techniques show comparable results, hinting that news articles and emails are exchangeable when comparing the performance of clustering methods.
 
 |                 | TF-IDF | word2vec summation | Paragraph Vectors |
 |-----------------|--------|--------------------|-------------------|

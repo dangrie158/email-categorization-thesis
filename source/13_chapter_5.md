@@ -41,15 +41,15 @@ A practical implementation of the classifier, especially for a higher number of 
 
 The mapping of the words to the corresponding row, respectively column of the projection matrices, the dictionary, can not be calculated this precisely since the words vary in length.
 
-A 200-dimensional model that uses hierarchical softmax needs in total just over 3.4 GB, therefore the dictionary and huffman tree occupy around 400MB. The dimensionality of the model affects the size of the projection matrices in a linear way. However, it does not affect the dictionary nor the other parts of the model. A 400-dimensional model of the same corpus, therefore, requires around 6.4 GB.
+A 200-dimensional model that uses hierarchical softmax needs in total just over 3.4GB, therefore the dictionary and huffman tree occupy around 400MB. The dimensionality of the model affects the size of the projection matrices in a linear way. However, it does not affect the dictionary nor the other parts of the model. A 400-dimensional model of the same corpus, therefore, requires around 6.4GB.
 
 The size of this base model changes only little when learning the specific training data for each class. This circumstance is due to the fact that most words in the training data are already present in the base model's corpus and therefore training these only adjusts the elements in the matrices. Only words not already present add new rows, respectively columns, to the projections which proved to be a negligible minority of words.
 
-Still, for each class, a modifiable copy of the base model is needed. For the evaluation with nine categories, the total size of all models is ~57.6 GB when using the 400-dimensional configuration or 30.6 GB for the 200-dimensional models respectively. Since this amount of memory was not available on the evaluation machine, the models were loaded sequentially, then the likelihood of each document $p(y|d)$ for all classes $y$ in the validation set was calculated from the model. The likelihoods were collected, and the classification rule (@classification-rule) was applied after all documents were *scored* with each model.
+Still, for each class, a modifiable copy of the base model is needed. For the evaluation with nine categories, the total size of all models is ~57.6GB when using the 400-dimensional configuration or 30.6GB for the 200-dimensional models respectively. Since this amount of memory was not available on the evaluation machine, the models were loaded sequentially, then the likelihood of each document $p(y|d)$ for all classes $y$ in the validation set was calculated from the model. The likelihoods were collected, and the classification rule (@classification-rule) was applied after all documents were *scored* with each model.
 
 ### Derived word2vec Models
 
-The practical implementation described in [Chapter @sec:w2vpractical] either requires large amounts of memory or does only allow for one or few models to be loaded into memory at the same time. Both options may be suitable for an experimental environment, not, however, for a classifier used in a product.
+The practical implementation described in [Chapter @sec:w2vpractical] either requires large amounts of memory or does only allow for one or few models to be loaded into memory at the same time. Both options may be suitable for an experimental environment, not, however, for a classifier used in a real-world environment.
 
 Learning a more specific model on top of a base model, however, only affects a relatively small fraction of the base model's parameters, depending on the number of different words in the specific training data. To leverage this property, an implementation of word2vec for derived models was written, based on gensim's implementation.
 
@@ -61,7 +61,7 @@ This implementation does not allow for concurrent training of multiple derived m
 
 During the projection of words into the embedding space or scoring of documents, the copied differences found while learning are used to shadow the lookup of parameters in the base model. This means lookup is first performed on the sparse representation of derived parameters. On a miss, the lookup is performed on the dense base model parameters. Since the base model is in this case used read-only, concurrent use of multiple derived models on the same base model is possible.
 
-Using this implementation, a derived model for each category in the news corpus was learned. The size of each model is shown in [Table @tbl:derived-sizes]. Using a separate, complete word2vec model for each category requires ~$3.4 GB * num\_categories$ of memory while using derived models only needs $3.4 GB + \sum { size\_ of\_ model }$. Therefore, the amount of memory required drops significantly when using more than one specific model at the same time. The complete classifier with all derived category models loaded requires ~4.4 GB of memory, compared to the 57.6 GB for the separate models.
+Using this implementation, a derived model for each category in the news corpus was learned. The size of each model is shown in [Table @tbl:derived-sizes]. Using a separate, complete word2vec model for each category requires ~$3.4GB * num\_categories$ of memory while using derived models only needs $3.4GB + \sum { size\_ of\_ model }$. Therefore, the amount of memory required drops significantly when using more than one specific model at the same time. The complete classifier with all derived category models loaded requires ~4.4GB of memory, compared to the 57.6 GB for the separate models.
 
 |             | Corpus Size [MB] | Derived Model Size [MB] |
 |-------------|------------------|-------------------------|
@@ -81,13 +81,13 @@ Table: Sizes of the derived models for each category and a 200-dimensional targe
 
 ## Classification using Summation of Word Vectors
 
-The document vectors built by summing all word vectors of the document presented in [chapter @sec:clustersum] worked particularly good for the clustering of articles. Using this technique, it is trivial to generate document vectors for previously unseen documents using only a single word2vec model. To build a classifier using these vectors, any classification algorithm can be used that works by finding spatial borders between the classes. For this experiment, a SVC was used, since an SVM classifier had the best performance on the TF-IDF vectors. However, a random forest classifier was also evaluated on these document vectors which showed a slightly worse performance, comparable to the difference between the SVM and random forest classifier for the TF-IDF vectors.
+The document vectors built by summing all word vectors of the document presented in [chapter @sec:clustersum] worked particularly good for the clustering of articles. Using this technique, it is trivial to generate document vectors for previously unseen documents using only a single word2vec model. To build a classifier using these vectors, any classification algorithm can be used that works by finding spatial borders between the classes. For this experiment, a SVC was used, since an SVM classifier had the best performance on the TF-IDF vectors (see [chapter @sec:classifier-result]). However, a random forest classifier was also evaluated on these document vectors which showed a slightly worse performance, comparable to the difference between the SVM and random forest classifier for the TF-IDF vectors.
 
 ### Practical Implementation
 
 The classifier was built using the multiclass SVC implementation from SciPy[^scipy-svc]. To transform the documents into vectors, a python class was written implementing a ```transform``` function to make the vectorizer chainable into a scipy ```Pipeline``` with the SVC being the penultimate step. The transform function implements the vectorization with the words IDF as a significance weight (@sumword2doc).
 
-The vectorization process requires only a single word2vec model. Therefore the memory consumption of the classifier is mainly dependent on the size of this model.
+The vectorization process requires only a single word2vec model for projecting the words into the embedding space. Therefore the memory consumption of the classifier is mainly dependent on the size of this model.
 
 [^scipy-svc]: http://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html
 
@@ -99,7 +99,7 @@ The vectorization process requires only a single word2vec model. Therefore the m
 
 Since all input to a CNN needs to be of the same dimension, the document matrix is then truncated or padded with zero vectors to some fixed number of words $N$.
 
-The fixed-length document matrix is then filtered by multiple, parallel convolutional layers with different filter heights. Since the word vectors represent a word in a high-dimensional vector space, the filter width, however, is always fixed to the dimensionality of the word2vec model. The filters, therefore, can be seen as a shifting context window over the word vectors where the filter height determines the context size.
+The fixed-length document matrix is then filtered by multiple, parallel, convolutional layers with different filter heights. Since the word vectors represent a word in a high-dimensional vector space, the filter width, however, is always fixed to the dimensionality of the word2vec model. The filters, therefore, can be seen as a shifting context window over the word vectors where the filter height determines the context size.
 
 The resulting feature map is then max-pooled. This step also deals with documents shorter than $N$ words, since they were zero-padded and therefore will not be selected in the pooling operation.
 
@@ -117,13 +117,13 @@ Due to the heavy tail in the length of articles ([figure @fig:articlesize]), usi
 
 To avoid the superfluous filter positions and increased memory consumption, $N$ was set to the median of the article length of 324 words. With this value, only around half of the documents require padding with an average length of ~155 zero tokens. The other articles require truncation of, on average, ~426 words but due to the heavy tail of the article length, the median is only 284 words.
 
-The convolutional layers were configured with filter sizes of 3, 4 and 5 words which are the same values used in @kim2014convolutional. Other parameters like the ReLU activation functions, the number of 64 filters per filter size and the dropout rate if the fully connected layer of 0.5 were also copied from this work.
+The convolutional layers were configured with filter sizes of 3, 4 and 5 words which are the same values used by @kim2014convolutional. Other parameters like the ReLU activation functions of the convolutional layers, the number of 64 filters per filter size and the dropout rate of the fully connected layer of 0.5 were also copied from this work.
 
 The model was learned using categorical cross entropy as a loss function which was minimized using the ADADELTA optimizer (@zeiler2012adadelta) over 15 epochs.
 
 ## Other classifiers for Comparison
 
-To get a relative comparison of the performance of the classifiers presented above, the following classifiers that are commonly used in text classification tasks are used as a baseline comparison.
+To get a relative comparison of the performance of the classifiers presented above, the following classifiers that are commonly used in text classification tasks are used as a baseline comparison:
 
 - Multinomial Naive Bayes on term frequency vectors
 - SVM classifier on TF-IDF vectors
@@ -169,13 +169,13 @@ The bad performance of the CNN was unexpected, especially since the network was 
 
 The results show that, for medium sized training sets, the likelihood maximization and the SVC classifier using word2vec document vectors perform best. Although for very large training sets the SVC and random forest classifiers using TF-IDF document vectors perform on par or marginally better, the better performance over the varying corpus size shows an advantage of the word2vec classifiers. For very small training sets, the benefit of the word2vec vectors being trained on a base model becomes visible when comparing both SVM classifiers. While the SVC using TF-IDF vectors starts with an accuracy close to random guessing (for $C=9$ classes the expected accuracy of random guessing is $\frac{1}{C} \approx 0.111$), the SVC using word2vec document vectors already has a much higher accuracy when only little training data is available.
 
-With the memory conserving implementation of the derived word2vec models this classifier, which performed second best over a broad range of training set sizes, becomes of practical use.
+With the memory conserving implementation of the derived word2vec models the likelihood maximization classifier, which performed second best over a broad range of training set sizes, becomes of practical use.
 
 Another interesting observation of this experiment which shall not go unmentioned is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
 
-![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=90% #fig:w2vdimen-comparison}
+As one can see, using a base model with doubled dimensionality increases the performance of the SVM and the CNN classifier only slightly and in some cases, for the likelihood maximization even for all sizes of the training set, the performance gets even worse.
 
-As one can see, using a base model with doubled dimensionality increases the performance of the SVM and the CNN classifier only slightly and in some cases, for the likelihood maximization even for all sizes of the training set, even worse.
+![Comparison of classifier performance with 200 and 400-dimensional word2vec models](source/figures/dimensionality_comparison.pdf){width=90% #fig:w2vdimen-comparison}
 
 The classifier maximizing the likelihood also has some other properties that are worth mentioning:
 
