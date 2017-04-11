@@ -6,7 +6,7 @@ When enough data is available, a new derived word2vec model can be trained and u
 
 ## Approach
 
-The general idea is that language is very rich in a way that often words can be replaced without changing the meaning of the sentence. The words that can be substituted for each other are then synonymous. Furthermore, sometimes words can be replaced with other words that are not synonymous; however, the sentence is still about the same topic. For example, a document about soccer where each occurrence of the word soccer is replaced with baseball is still about the overall theme sports.
+The general idea is that language is very rich in a way that words can often be replaced without changing the meaning of the sentence. The words that can be substituted for each other are then synonymous. Furthermore, sometimes words can be replaced with other words that are not synonymous; however, the sentence is still about the same topic. For example, a document about soccer where each occurrence of the word soccer is replaced with baseball is still about the overall theme sports.
 
 This connection between words is also reflected by the distributional hypothesis (@harris1954distributional) and therefore is learned by a word2vec model. In fact, word2vec learns word vectors that have a short distance (for cosine similarity) to words that are synonymous or thematically related. For example, in the model learned on the Wikipedia corpus, closest to the vector of the word ```president``` are the vectors for the words ```chairman```, ```chancellor``` and ```commissioner```, all representing a political topic.
 
@@ -22,7 +22,7 @@ To leverage this property, the following method was tested to create additional 
 
 As a natural corpus, the Wikipedia corpus and the news corpus without the articles from the test category were used, since this is all the data that is available in this scenario.
 
-To sort the tokens by their relevance, the TF-IDF of every token could be calculated. However, this would require a pass over the complete natural corpus to find the IDFs. Therefore the total term frequency (TTF) over the corpus was used in place of the IDF since this information is already available in the word2vec model due to the construction of the huffman tree for the hierarchical softmax optimization and the subsampling. The significance of a word is therefore calculated by (@tf-ittf) with $tf_d$ being the term frequency in the document and $ttf$ being the word frequency in the complete corpus.
+To sort the tokens by their relevance, the TF-IDF of every token could be calculated. However, this would require a pass over the complete natural corpus to find the IDFs. Therefore, the total term frequency (TTF) over the corpus was used in place of the IDF since this information is already available in the word2vec model due to the construction of the Huffman tree for the hierarchical softmax optimization and the subsampling. The significance of a word is therefore calculated by (@tf-ittf) with $tf_d$ being the term frequency in the document and $ttf$ being the word frequency in the complete corpus.
 
 (@tf-ittf) $$ tf-ittf(w,d)=\frac { { tf }_{ d }(w) }{ ttf(w) } $$
 
@@ -30,11 +30,12 @@ The ten most relevant tokens according to this measure were then used as keyword
 
 ## Problems with synthetic Languages
 
-The test was performed on the German Wikipedia and news corpus. German is a synthetic, fusional language, which often forms specific words using a composition of unspecific words. For example, the word ```orange juice``` is translated into German ```Orangensaft```. This synthetic property proved to be a problem for the algorithm described above since it depends on the keywords being present in the corpus to find synonyms for it. However, often specific words that are a composition of multiple words were picked as keywords due to their low TTF. Therefore, often the keyword did not appear in the word2vec model, and thus, no new document could be created.
+The test was performed on the German Wikipedia and news corpus. German is a synthetic, fusional language, which often forms specific words using a composition of unspecific words. For example, the word ```orange juice``` is translated into German ```Orangensaft```. This synthetic property proved to be a problem for the algorithm described above since it depends on the keywords being present in the corpus to find synonyms for it. However, often specific words that are a composition of multiple words were picked as keywords due to their low TTF. Therefore, the keyword often did not appear in the word2vec model, and thus, no new document could be created.
 
 To overcome this issue, the words need to be decomposed and split into their more general parts. For the word ```Orangensaft```, these parts are ```Orange``` and ```Saft```.
 
 The algorithm used for splitting the words can be described by the following pseudocode:
+\newpage
 
     split_word_into_partitions
     In: word, vocabulary
@@ -62,7 +63,7 @@ The algorithm used for splitting the words can be described by the following pse
 
 This function returns a list of possible partitions of the word where each part, except for the last, is in the vocabulary of the base corpus. The last part is excluded from the presence requirement since it proved to be often a suffix rather than a word.
 
-Each found partition is then scored, and the partition with the highest score is chosen as the correct split. @koehn2003empirical suggest the geometric mean of the word occurrences of all parts as a score function. However, this often yielded partitions with very short parts. For example, the word ```Orangensaft``` was split into the parts ```Orange```, ```nsa``` and ```ft```. Therefore, the product of part frequency and length was used for the weighting instead (@geom-mean-ttf-len) which proved to yield better results.
+Each found partition is then scored and the partition with the highest score is chosen as the correct split. @koehn2003empirical suggest the geometric mean of the word occurrences of all parts as a score function. However, this method often yielded partitions with very short parts. For example, the word ```Orangensaft``` was split into the parts ```Orange```, ```nsa``` and ```ft```. Therefore, the product of part frequency and length was used for the weighting instead (@geom-mean-ttf-len) which proved to yield better results.
 
 (@geom-mean-ttf-len) $$\underset { S }{ argmax } ({ \prod_{ { p }_{ i }\in S }^{  }{ count({ p }_{ i }) * len({ p }_{ i }) }  }^{ \frac { 1 }{ n }  })$$
 
@@ -83,7 +84,7 @@ This decomposition algorithm is only applied when the keyword is not in the base
 
 ## Results
 
-As a newly introduced category, the ```Sport``` category was arbitrary chosen. However, since the method will be evaluated against the same classifier and category without the additional documents, this choice is insignificant.
+As a newly introduced category, the ```Sport``` category was chosen arbitrary. However, since the method will be evaluated against the same classifier and category without the additional documents, this choice is insignificant.
 
 Since a multinomial Naive Bayes classifier performed best when trained with only 10 data points for each class (see [chapter @sec:classifier-result]), this classifier will be trained and evaluated on the created data.
 
@@ -91,7 +92,7 @@ Since the performance of a multinomial Naive Bayes classifier over a varying tra
 
 [Figure @fig:extended-performace] shows the performance difference between the classifier with and without the additionally created training data over a varying size of original training data. As one can see, the classifier that was trained on the original and created training data has up to 15% better accuracy on the data when trained with only 20 data points.
 
-One can also see that when more data is available, the performance difference gets smaller and finally, the extended classifier performs worse compared to the one trained only on the original data.
+One can also see that when more data is available, the performance difference gets smaller and finally the extended classifier performs worse compared to the one trained only on the original data.
 
 ![Comparison of a multinomial Naive Bayes classifier when trained with and without created training data](source/figures/extended_performace.pdf "Extended classifier performance"){width=90% #fig:extended-performace}
 
@@ -107,6 +108,6 @@ When enough training data is available, a new word2vec model on the data can be 
 
 The expected accuracy of the compound classifier in the product of accuracies for each classifier.
 
-[Figure @fig:extended-performace-neg-sampling] shows the accuracy of a binary classifier with a varying number of training samples with and without the additionally generated training data when using 100 samples of each negative class. As one can see, the difference in accuracy between the classifiers is very close to [figure @fig:extended-performace].
+[Figure @fig:extended-performace-neg-sampling] shows the accuracy of a binary classifier with a varying number of training samples with and without the additionally generated training data when using 100 samples of each negative class. As one can see, the difference in accuracy between the classifiers is very close to [Figure @fig:extended-performace].
 
 ![Comparison of a multinomial Naive Bayes classifier for a binary classification problem when trained with and without created training data](source/figures/extended_performace_only_negative.pdf "Extended classifier performance with negative sampling"){width=90% #fig:extended-performace-neg-sampling}

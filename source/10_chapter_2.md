@@ -29,12 +29,12 @@ Keras is a high-level abstraction library written in Python for Theano and Tenso
 
 ## Word2Vec {#sec:word2vec}
 
-Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by [@mikolov2013efficient].
+Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by Mikolov et al. [-@mikolov2013efficient].
 Classical NLP models often use the simple bag of words (BOW) approach to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.
 
-Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000 @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
+Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000, @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
 
-Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Singular Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows using any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
+Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Singular Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows the use of any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
 
 [^1]: good vector representation of words will have a small distance between words with a similar meaning and long distances for words with different meanings.
 
@@ -96,11 +96,11 @@ Using this loss function, the model can be trained with any back-propagating los
 
 #### Hierarchical Softmax
 
-A word2vec model, like most machine learning algorithms, profits from a large training set. It also can only embed words in the vector space that are present in the vocabulary. Therefore, the weight matrices $Wi$ and $Wo$ can get large, because for both the size of the vocabulary dictates the size of one dimension.
+A word2vec model, like most machine learning algorithms, profits from a large training set. Furthermore, it can only embed words in the vector space that are present in the vocabulary. Therefore, the weight matrices $Wi$ and $Wo$ can get large, because for both the size of the vocabulary dictates the size of one dimension.
 
 As stated earlier, the computation of the hidden layer state $\vec{h}$ can be implemented very efficiently by directly summing the rows of the weight matrix $Wi$ (@hiddenlayercalc). However, the calculation of the output vector $\vec{o}$ with the naive approach in (@outputlayercalc) requires the computation of the whole matrix multiplication to calculate the denominator in the softmax activation function.
 
-To overcome this issue, the hierarchical version of the softmax function (@morin2005hierarchical and @mnih2009scalable) can be used (@mikolov2013efficient). Hierarchical softmax uses a binary tree (more specifically a huffman tree to get an optimal prefix coding for more frequent tokens) where every token, in this case every word in the vocabulary, is a leaf of the tree ([Figure @fig:bintree]). In a balanced binary tree, the depth of each leaf is limited to $\left\lceil {log}_{2}(N)\right\rceil$ where $N$ is the number of leafs. Since a huffman tree optimizes the depth of its leaves by their frequency, the average depth is also limited to this value.
+To overcome this issue, the hierarchical version of the softmax function (@morin2005hierarchical and @mnih2009scalable) can be used (@mikolov2013efficient). Hierarchical softmax uses a binary tree (more specifically a Huffman tree to get an optimal prefix coding for more frequent tokens) where every token, in this case every word in the vocabulary, is a leaf of the tree ([Figure @fig:bintree]). In a balanced binary tree, the depth of each leaf is limited to $\left\lceil {log}_{2}(N)\right\rceil$ where $N$ is the number of leafs. Since a Huffman tree optimizes the depth of its leaves by their frequency, the average depth is also limited to this value.
 
 ![An example binary tree for a vocabulary with V words. (Rong (2014)](source/figures/binary-tree.pdf "Binary tree for a vocabulary"){#fig:bintree}
 The hierarchical softmax approach now uses each branch of the tree as a normalized probability. The final probability for the leaf $l$ is calculated by multiplying each branch along the direct path of the tree up to to the node $l$. The Paper @mnih2009scalable formulates this strategy as follows:
@@ -119,7 +119,7 @@ in which one can see the continuous product of the inner term over the $L({w}_{t
 
 #### Subsampling
 
-In a large corpus, there will be some phrases (word co-occurrences) that occur much more frequent compared to others. As the word vectors for the words in the phrase will change less with every training step as they "settle" towards their optimal position, the model profits less and less from performing a training step on those phrases. Also, in an unprocessed corpus, there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
+In a large corpus, there will be some phrases (word co-occurrences) that occur much more frequent compared to others (see [Figure @fig:wordfrequencies]). As the word vectors for the words in the phrase will change less with every training step as they "settle" towards their optimal position, the model profits less and less from performing a training step on those phrases. Also, in an unprocessed corpus, there will be words with a much higher frequency compared to others. These words may be stop words (e.g. 'the', 'and', 'or') with no significant importance to the meaning of the phrase.
 
 Therefore, @mikolov2013distributed suggest a subsampling of the words in the corpus based on their term frequency. They provide the formula
 
@@ -127,7 +127,7 @@ Therefore, @mikolov2013distributed suggest a subsampling of the words in the cor
 
 that calculates the probability for the word ${ w }_{ i }$ to be skipped in this training step. $f(w)$ is the term frequency of word $w$ and $t$ is a threshold which is defined as a hyperparameter of the model. Gensim's implementation of word2vec uses $0.001$ as a default value for $t$.
 
-Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the huffman tree). Therefore, it can be used as a simple way to scale down the impact of stopwords on the model without the need of a language-specific stopword set.
+Subsampling is a cheap operation during learning if the word frequencies are already precalculated (e.g. from building the Huffman tree). Therefore, it can be used as a simple way to scale down the impact of stopwords on the model without the need of a language-specific stopword set.
 
 #### Negative Sampling
 
@@ -147,13 +147,13 @@ Latent Dirichlet allocation (LDA) is a generative model used for topic modeling 
 
 LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more precisely the probabilistic variant PLSI (@hofmann1999probabilistic).
 
-LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$ $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation (@plsi-mixture) that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
+LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$; $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation (@plsi-mixture) that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
 
 (@plsi-mixture) $$p(w,d)=\sum_{ z \in Z }^{  }{ p(z)p(d|z)p(w|z) } $$
 
 However, while PLSI is a generative model for the corpus it is learned on, the documents used for learning are only treated as a set of individual labels. Therefore the PLSI model cannot directly be used to create probabilities for new documents (@blei2002latent).
 
-The LDA model, in contrast, is a fully generative model. Therefore the model can describe how a new document $d$ is generated from the model by the following process.
+The LDA model, in contrast, is a fully generative model. Therefore, the model can describe how a new document $d$ is generated from the model by the following process.
 
 1. Draw a set of $k$ multinomial distributions from a dirichlet distribution ${\beta}_{k} \sim Dir(\eta )$
 2. Draw the mixture of topics as a multinomial distribution for the document ${\theta}_{d}$ from a dirichlet distribution ${\theta}_{d} \sim Dir(\alpha )$
@@ -163,13 +163,13 @@ The LDA model, in contrast, is a fully generative model. Therefore the model can
 
 Note that LDA uses a bag of words assumption for the documents, so the order of the generated words does not matter.
 
-In the formal plate notation the generating process with $D$ documents, each containing $N$ words can be described by [figure @fig:ldaplate] where each plate is the repeated draw of a value from the distribution.
+In the formal plate notation the generating process with $D$ documents, each containing $N$ words can be described by [Figure @fig:ldaplate] where each plate is the repeated draw of a value from the distribution.
 
 ![Plate notation of the LDA generative process. Based on Lee and Singh (2013)](source/figures/lda-plate.pdf "Plate notation of the LDA generative process"){#fig:ldaplate}
 
 ### Learning
 
-The only observable entity in [figure @fig:ldaplate] are the words ${w}_{d,n}$ of the documents. To find the latent topics $z$, the objective while learning an LDA model is to determine the parameters $\theta$ and $\beta$ for the distributions so that the model has a high probability to generate the documents in the training set. Therefore the posterior probability needs to be estimated, given the Dirichlet priors and the likelihood based on the observations of words (@lda-posterior) which can be represented as the joint probability in ((@lda-joint) based on @darling2011theoretical).
+The only observable entity in [Figure @fig:ldaplate] are the words ${w}_{d,n}$ of the documents. To find the latent topics $z$, the objective while learning an LDA model is to determine the parameters $\theta$ and $\beta$ for the distributions so that the model has a high probability to generate the documents in the training set. Therefore, the posterior probability needs to be estimated, given the Dirichlet priors and the likelihood based on the observations of words (@lda-posterior) which can be represented as the joint probability in ((@lda-joint) based on @darling2011theoretical).
 
 (@lda-posterior) $$p(w,z,\beta ,\theta | \alpha ,\eta )$$
 (@lda-joint) $$\prod _{ K }^{  }{ p(\beta_k|\eta) } \prod _{ D }^{  }{ p(\theta_d|\alpha) }\prod _{ N }^{  }{ p(z_{d,n}|\theta_d) p(w_{d,n}|\beta_{z_{d,n}}) }$$
