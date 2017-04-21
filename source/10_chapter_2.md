@@ -1,40 +1,48 @@
-# Related Work
+# Theoretical and Technical Framework
 
 This section provides an overview of the technologies and algorithms used to implement and validate the classifiers presented in the next sections.
 
 ## Tools
 
-### SciPy [^scipy]
+**SciPy** [^scipy]
 
 SciPy is a set of Python libraries for scientific computing. The main packages used in this thesis are:
 
 - *NumPy* a library for multi-dimensional arrays of arbitrary data types with efficient implementation of mathematic operations on this data.
-- *SciPy* a collection of mathematic operations on data including clustering, classification and regression algorithms.
+- *SciPy* a collection of mathematic operations on data including transformation, random sampling and dimensionality reduction algorithms.
 - *Matplotlib* a plotting library that can plot 2D and 3D data and save it in multiple output formats. Used to create most charts in this thesis.
-- *IPython* a python kernel for the interactive Jupyter notebook server.
+- *IPython* a Python kernel for the interactive Jupyter notebook server.
 
 [^scipy]: https://scipy.org
 
-### Gensim [^gensim]
+**scikit-learn** [^scikit-learn]
+
+Scikit-learn is a Python library build on top of SciPy that implements Machine Learning algorithms including classification, clustering and regression.
+
+[^scikit-learn]: http://scikit-learn.org
+
+**Gensim** [^gensim]
 
 Gensim is a Python package by Radim Řehůřek that provides efficient implementations of machine learning algorithms for text-based data. Gensim's implementation of the LDA and word2vec algorithms is used in this thesis.
 
-[^gensim]: https://radimrehurek.com/gensim/
+[^gensim]: https://radimrehurek.com/gensim
 
-### Keras [^keras]
+**Keras** [^keras]
 
-Keras is a high-level abstraction library written in Python for Theano and TensorFlow backends. It provides a common interface for both libraries. Keras is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
+Keras is a high-level abstraction library written in Python for Theano[^theano] and TensorFlow[^tensorflow] backends. Theano and TensorFlow are both graph based computation libraries for multi-dimensional data flow.  Keras provides a common interface for both libraries. It is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
 
 [^keras]: https://keras.io
+[^theano]: http://deeplearning.net/software/theano/
+[^tensorflow]: https://www.tensorflow.org
 
 ## Word2Vec {#sec:word2vec}
 
-Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) which was introduced by Mikolov et al. [-@mikolov2013efficient].
-Classical NLP models often use the simple bag of words (BOW) approach to handle words, where each word is treated as a single, atomic symbol. The words then are represented as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.
+Word2vec is a method to build a Vector Space Model (VSM) in which words can be represented (embedded) that was introduced by Mikolov et al. [-@mikolov2013efficient].
+Classical NLP models often treat each word as a single, atomic symbol, for example, as a numeric id (e.g. ```car: 350``` and ```truck: 543```) or a single-hot vector. A single-hot vector is a binary sparse vector with the same dimensionality as the length of the vocabulary with only one (single) non-zero (hot) element. These simple BOW approaches, however, do not allow the representation of similarities between words (e.g. the word ```car``` and ```truck``` are both motorized transportation devices with 4 or more wheels). Therefore, an algorithm using one of these representations cannot take advantage of this knowledge unless it learns them as part of the training, which requires more training data.
 
-Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000, @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm, therefore, tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
+Word2vec, however, tries to embed each word in the vocabulary in a vector space with, compared to the dimensionality of single-hot encodings, very low dimensionality (typically between 100 - 1000, @mikolov2013efficient). It uses the *distributional hypothesis* which states that words which occur in the same context tend to share a similar meaning [@harris1954distributional]. The algorithm therefore tries to learn dense vectors that have a high (cosine-) similarity for words that co-occur often and a low similarity for words that do not occur in the same context.
 
-Word2Vec uses a *predictive method* that tries to predict a word using its context as an input directly. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Singular Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows the use of any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
+Word2Vec uses a *predictive method* that either tries to predict a word using its context as an input or to predict the context given the current word. Another approach is to use a *count based* model like Latent Semantic Indexing (LSI) that tries to learn the correlation between words by counting the co-occurrence and then transform this information into a low-dimensional vector space using Singular Value Decomposition (SVD) [@dumais1988using]. However, both, predictive and count based methods can be learned unsupervised on unlabeled training data because the only input is the context of the current word. This property allows the use of any text corpus in any language where the distributional hypothesis holds true. To train word2vec models with good vector representations[^1], a large corpus is needed. This requirement comes from the fact that the distributional hypothesis is a statistical model which profits from a large corpus where words occur in their context more than once. Mikolov et al. published a pre-trained word2vec model they used to evaluate the optimization methods in @mikolov2013distributed. This model was trained on 100 billion (english) words from a Google News corpus.
 
 [^1]: good vector representation of words will have a small distance between words with a similar meaning and long distances for words with different meanings.
 
@@ -64,27 +72,30 @@ As shown in [Figure @fig:cbow] above, to train the the word ${w}_{t} \in V$ the 
 
 The hidden layer has a simple, linear activation function (${f}_{i}(x) = x$). Therefore, the output of the hidden layer is simply the result of multiplying the input vector $\vec { { c }_{ { w }_{ t } } }$ with the weight matrix $Wi$
 
-(@hiddenlayercalc) $${ \vec { h } =\vec { { c }_{ { w }_{ t } } } \times Wi=\frac { 1 }{ 2C } \sum _{ j=0 }^{ 2C }{ { Wi }_{ j } }  }^{ T }$$
+(@hiddenlayercalc) $${ \vec { h } =\vec { { c }_{ { w }_{ t } } } \times Wi=\frac { 1 }{ 2C } \sum _{ j=0 }^{ v }{ { Wi }_{ j } }  }^{ T }$$
 
 where ${ Wi }_{ j }$ is the $j$-th row of $Wi$.
 
 Since the rows of the input matrix correspond to the words in the vocabulary, this multiplication can be implemented very efficiently by summing up the rows of the matrix where the input vector has a non-zero value and transpose the result (@hiddenlayercalc). In the case of mean-averaged input vectors, the result also needs to be divided by the context size.
 
-To calculate the state of the output layer $\vec{o}$, the current state of the hidden layer $\vec{h}$ needs to be multiplied by the output weight matrix $Wo$. Since the CBOW objective is to learn the neural network in a way that maximizes the probability to generate the output word given a set of input words, the output layer uses a softmax activation function (@softmax) to output probabilities for each neuron that will sum up to one. (@outputlayercalc) shows the formula to calculate the probability for word $x$ to be generated with the current hidden layer state $\vec{h}$ where ${Wo}_{i}$ is the $i$-th column of the matrix $Wo$.
+To calculate the state of the output layer $\vec{o}$, the current state of the hidden layer $\vec{h}$ needs to be multiplied by the output weight matrix $Wo$. Since the CBOW objective is to learn the neural network in a way that maximizes the probability to generate the output word given a set of input words, the output layer uses a softmax activation function (@softmax) to output probabilities for each neuron that will sum up to one. (@outputlayercalc) shows the formula to calculate the probability for word $w_t$ to be generated with the current hidden layer state $\vec{h}$ where ${Wo}_{i}$ is the $i$-th column of the matrix $Wo$.
 
 (@softmax) $${ softmax(x) }_{ j }=\frac { exp({ x }_{ j }) }{ \sum _{ i=1 }^{ K }{ exp({ x }_{ i }) }  } \quad for \quad j=\{ 1, \dots ,  K \}$$
 
-(@outputlayercalc) $$ p({ w }_{ t }|{ c }_{ { w }_{ t } }) = \frac { exp(\vec { h } \cdot { Wo }_{ x }) }{ \sum _{ i=0 }^{ V }{ exp({ \vec { h } \cdot { Wo }_{ i } } ) }  } $$
+(@outputlayercalc) $$ p({ w }_{ t }|{ c }_{ { w }_{ t } }) = \frac { exp(\vec { h } \cdot { Wo }_{ t }) }{ \sum _{ i=0 }^{ V }{ exp({ \vec { h } \cdot { Wo }_{ i } } ) }  } $$
 
-With formula (@outputlayercalc) the CBOW objective and the loss function can be expressed as follows:
+The maximization of the likelihood that word $w_t$ is generated by its context $c_{w_t}$, which is the objective of the CBOW model, can be expressed by (@cbowobjective) using (@outputlayercalc).
 
 (@cbowobjective) $$\underset { Wi,Wo }{ argmax }\ log(p({ w }_{ t }|{ c }_{ { w }_{ t } }))$$
+
+To maximize (@cbowobjective), the loss function needs to be minimized by adjusting the matrices $Wi$ and $Wo$. The loss is calculated by subtracting the summed likelihoods for every *wrong* combination of target-context pairs from the likelihood of the *correct* pair. Due to the softmax normalization, the sum of likelihoods for the *wrong* pairs is equal to $1-p({ w }_{ t }|{ c }_{ { w }_{ t } })$.
 
 (@lossfunction) $$
 \begin{aligned}
 L(Wi,Wo)
-&=-({ w }_{ t }-\sum _{ { w }_{ n }\in V\setminus { w }_{ t } }^{  }{ p({ w }_{ n }|{ c }_{ { w }_{ t } }) } ) \\
-&=-(1-p({ w }_{ t }|{ c }_{ { w }_{ t } }))
+&=-(p({ w }_{ t }|{ c }_{ { w }_{ t } })-\sum _{ { w }_{ n }\in V\setminus { w }_{ t } }^{  }{ p({ w }_{ n }|{ c }_{ { w }_{ t } }) } ) \\
+&=-(p({ w }_{ t }|{ c }_{ { w }_{ t } }) - (1-p({ w }_{ t }|{ c }_{ { w }_{ t } }))) \\
+&=1-2p({ w }_{ t }|{ c }_{ { w }_{ t } })
 \end{aligned}
 $$
 
@@ -147,7 +158,7 @@ Latent Dirichlet allocation (LDA) is a generative model used for topic modeling 
 
 LDA is a successor of Latent Semantic Indexing (LSI) (@deerwester1990indexing) or more precisely the probabilistic variant PLSI (@hofmann1999probabilistic).
 
-LSI is a discriminative model that uses a TF-IDF (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$; $p(w,d)$ by the mixture of independent multinomial distributions. @hofmann1999probabilistic gives equation (@plsi-mixture) that defines the joint probability model where $Z$ is the set of unobserved (latent) topics.
+LSI is a discriminative model that uses a tf-idf (term frequency - inverse document frequency) matrix of the words in the corpus and compresses this matrix using a singular value decomposition (SVD). PLSI, in contrast, is a generative mixture model, that tries to model the probability of the word co-occurrence of a word $w$ in document $d$; $p(w,d)$ by the mixture of independent multinomial distributions. Thomas Hoffman presents equation (@plsi-mixture) that defines the joint probability model where $Z$ is the set of unobserved (latent) topics (@hofmann1999probabilistic).
 
 (@plsi-mixture) $$p(w,d)=\sum_{ z \in Z }^{  }{ p(z)p(d|z)p(w|z) } $$
 
@@ -179,9 +190,11 @@ One way to find the latent variables for the posterior probability is by using G
 @darling2011theoretical goes into great detail on how the posterior distribution can be inferred using Gibbs sampling. However, the practical algorithm follows the following scheme:
 
 1. Assign each word ${w}_{d,n}$ with a randomly choosen topic $z \in \{ 1, \dots , K \}$
-2. For each word ${w}_{d,n}$ document $d$ in the corpus:
-    1. Calculate $p(z|d)$, the percentage of words from $d$ which are already assigned to $z$
+2. For each word ${w}_{d,n}$ in document $d$ in the corpus:
+    1. Calculate $p(z|d)$, the probability that a word from $d$ is already assigned to $z$
     2. Calculate $p(w_{d,n}|z)$, the proportion of how often $w_{d,n}$ already appears in $z$
     3. Reassign the word to the topic $z$ where $\underset { z }{ argmax } (p(z|d)p(w_{d,n}|z))$
 
-This process can be repeated for several epochs.
+This algorithm can be repeated for several epochs.
+
+This unsupervised process yields a model that describes every document $d$ as a mixture of $K$ abstract topics $z$. The representation of a document as a mixture of abstract topics can be seen as a compression of the document. The mixture of topics can also be seen as a vector of length $K$. LDA can therefore be seen as a document embedding (in contrast to the word embedding, word2vec) since it embeds each document in a $K$ dimensional vector sapce, in which documents with a similar mixture of topics have a small distance to one another. This vector space model can then be used to find document that are about the same concrete topic by grouping documents with a similar mixture of abstract topics. In the next chapter, LDA is used to group similar documents to reduce the workload of manually assigning a label to a document.

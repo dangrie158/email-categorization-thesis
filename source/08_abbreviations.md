@@ -11,8 +11,9 @@
 \textbf{LDA}             \> \textbf{L}atent \textbf{D}irichlet \textbf{A}llocation \\  
 \textbf{LSI}             \> \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
 \textbf{PLSI}             \> \textbf{P}robabilistic \textbf{L}atent \textbf{S}emantic \textbf{I}ndexing \\  
-\textbf{TF-IDF}             \> \textbf{T}erm \textbf{F}requency  \textbf{- I}nverse  \textbf{D}ocument \textbf{F}requency \\  
-\textbf{TTF}             \> \textbf{T}otal \textbf{T}erm \textbf{F}requency \\  
+\textbf{tf}             \> \textbf{t}erm \textbf{f}requency \\  
+\textbf{tf-idf}             \> \textbf{t}erm \textbf{f}requency  \textbf{- i}nverse  \textbf{d}ocument \textbf{f}requency \\  
+\textbf{ttf}             \> \textbf{t}otal \textbf{t}erm \textbf{f}requency \\  
 \textbf{SVD}             \> \textbf{S}ingular \textbf{V}alue \textbf{D}ecomposition \\  
 \textbf{MCMC}             \> \textbf{M}arcov \textbf{C}hain \textbf{M}onte \textbf{C}arlo \\  
 \textbf{RSS}             \> \textbf{R}ich \textbf{S}ite \textbf{S}ummary \\  

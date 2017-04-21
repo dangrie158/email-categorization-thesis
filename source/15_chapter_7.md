@@ -68,23 +68,19 @@ This subsection will evaluate the methods presented in [chapters @sec:initial-la
 
 ### Clustering for initial Labeling
 
-When working with the news corpus, the summation of word vectors as document vectors worked best compared to TF-IDF and *Paragraph Vectors*. [Table @tbl:mailclustering-results] shows the same advantage of summarized word vectors.
+When working with the news corpus, the summation of word vectors as document vectors worked best compared to tf-idf and *Paragraph Vectors*. [Table @tbl:mailclustering-results] shows the same advantage of summarized word vectors for the email corpus.
 
 The big increase in homogeneity compared to the news corpus, although almost the same number of classes in the ground truth (10 in the mail corpus compared to 11 in the news corpus), can be explained by the fact that many emails are computer generated, following a simple template and therefore having virtually the same document vector, independent of the vectorizer. Computer generated emails are mainly present in class 6 containing the notification emails of various social networks.
 
-The distribution of the computer generated emails can be seen in the plot of the t-SNE projection of the document vectors (summarized word2vec vectors, [Figure @fig:mailw2v-clustering]). The dense orange blob in the middle is the representation of all notification emails which has only a few outliers.
-
-Furthermore, the clustering using an LDA model and picking the topic with the largest share as cluster yielded again the best homogeneity in the clusters with a value of 0.907.
+The distribution of the computer generated emails can be seen in the plot of the t-SNE projection of the document vectors (summarized word2vec vectors, [Figure @fig:mailw2v-clustering]). The dense orange blob in the middle is the representation of all notification emails which has only a few outliers. Furthermore, the clustering using an LDA model and picking the topic with the largest share as cluster yielded again the best homogeneity in the clusters with a value of 0.907.
 
 However, independent of the increase in homogeneity, the clustering techniques show comparable results, hinting that news articles and emails are exchangeable when comparing the performance of clustering methods.
 
-|                 | TF-IDF | word2vec summation | Paragraph Vectors |
+|                 | tf-idf | word2vec summation | Paragraph Vectors |
 |-----------------|--------|--------------------|-------------------|
 | k-Means         | 0.105  | 0.749              | 0.675             |
 | Ward            | 0.289  | 0.735              | 0.694             |
 | Birch           | 0.314  | 0.780              | 0.741             |
-| Average Linkage | 0.002  | 0.001              | 0.002             |
-| DBSCAN          | 0.052  | 0.019              | 0.063             |
 Table: Homogeneity of the clustering methods with different vectorizers on the mail corpus {#tbl:mailclustering-results}
 
 ![t-SNE visualization of the mail corpus using summarized word2vec vectors as document vectors](source/figures/mail_tsne_w2v.pdf "t-SNE visualization of the mail corpus"){width=90% #fig:mailw2v-clustering}
@@ -99,23 +95,23 @@ The overall accuracy is much higher on the mail corpus than it was for any class
 
 Comparing the results to [Figure @fig:class-performance] and [Table @tbl:classification-results], one can see that all classifiers behave comparable to the outcome of the evaluation on the news corpus.
 
-The SVM classifier using TF-IDF vectors has the best accuracy of all classifiers when trained on the complete training set closely followed by the likelihood maximization classifier.
+The SVM classifier using tf-idf vectors has the best accuracy of all classifiers when trained on the complete training set closely followed by the likelihood maximization classifier.
 
-For very few training elements for each class, the advantage of the pre-trained base model becomes once more visible with the CNN, likelihood maximization and the SVM classifier using summarized word2vec vectors outperforming the classifiers using TF-IDF vectors. Only the multinomial Naive Bayes classifier performed as good in this scenario. The overall performance of the CNN is also once more particularly bad compared to all other classifiers.
+For very few training elements for each class, the advantage of the pre-trained base model becomes once more visible with the CNN, likelihood maximization and the SVM classifier using summarized word2vec vectors outperforming the classifiers using tf-idf vectors. Only the multinomial Naive Bayes classifier performed as good in this scenario. The overall performance of the CNN is also once more particularly bad compared to all other classifiers.
 
 ![Accuracy of different classifiers with a varying training set size.](source/figures/accuracy_mail_comparison.pdf "Accuracy of classifiers on the mail corpus"){width=90% #fig:mail-categorization}
 
 | Classifier            | Accuracy     |
 |-----------------------|--------------|
 | Multinomial NB        |     0.933367 |
-| SVC (TF-IDF)          | **0.988390** |
-| Rand. Forest (TF-IDF) |     0.975192 |
+| SVC (tf-idf)          | **0.988390** |
+| Rand. Forest (tf-idf) |     0.975192 |
 | w2v inv. Bayes        |     0.988294 |
 | SVC (w2v)             |     0.953054 |
 | CNN                   |     0.913054 |
 Table: Result of different classifiers on the mail corpus {#tbl:mail-categorization}
 
-As noted in [chapter @sec:mail-corpus-stats], the big variance in class elements requires a closer inspection of the classifier output to make sure the good performance in not mainly based on the few, big classes. [Table @tbl:mail-confusion] therefore shows the confusion matrix of the likelihood maximization classifier. As one can see, the accuracy is good for all classes since the highest value of each row is on the diagonal.
+As noted in [chapter @sec:mail-corpus-stats], the big variance in class elements requires a closer inspection of the classifier output to make sure the good performance is not mainly based on the few, big classes. [Table @tbl:mail-confusion] therefore shows the confusion matrix of the likelihood maximization classifier. As one can see, the accuracy is good for all classes since the highest value of each row is on the diagonal.
 
 | Class | 1     | 2       | 3       | 4      | 5       | 6     | 7     | 8       | 9      | 10     |
 |-------|-------|---------|---------|--------|---------|-------|-------|---------|--------|--------|
