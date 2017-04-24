@@ -1,8 +1,6 @@
 # Evaluation using Emails
 
-To test the assumption that news articles are a valid replacement for emails as stated in [chapter @sec:newscorpus], this chapter will evaluate the methods presented in the [chapters @sec:initial-labeling] [, @sec:auto-classification] [and @sec:new-classes] on the private email corpus of the author. However, due to privacy issues, this corpus will not be released.
-
-The used inbox is sorted into eight different folders through a mix of rule-based and manual sorting using macOS' build-in ```Mail``` application. There are also two separate inboxes for work and study related emails which can be considered another two folders totaling ten different folders.
+To test the assumption that news articles are a valid replacement for emails as stated in [chapter @sec:newscorpus], this chapter will evaluate the methods presented in the [chapters @sec:initial-labeling] [, @sec:auto-classification] [and @sec:new-classes] on the private email corpus of the author. However, due to privacy issues, this corpus will not be released. The used inbox is sorted into eight different folders through a mix of rule-based and manual sorting using macOS' build-in ```Mail``` application. There are also two separate inboxes for work and study related emails which can be considered another two folders totaling ten different folders.
 
 First, the procedure of preprocessing the corpus is explained, then the methods will be evaluated on the preprocessed corpus.
 
@@ -74,8 +72,6 @@ The big increase in homogeneity compared to the news corpus, although almost the
 
 The distribution of the computer generated emails can be seen in the plot of the t-SNE projection of the document vectors (summarized word2vec vectors, [Figure @fig:mailw2v-clustering]). The dense orange blob in the middle is the representation of all notification emails which has only a few outliers. Furthermore, the clustering using an LDA model and picking the topic with the largest share as cluster yielded again the best homogeneity in the clusters with a value of 0.907.
 
-However, independent of the increase in homogeneity, the clustering techniques show comparable results, hinting that news articles and emails are exchangeable when comparing the performance of clustering methods.
-
 |                 | tf-idf | word2vec summation | Paragraph Vectors |
 |-----------------|--------|--------------------|-------------------|
 | k-Means         | 0.105  | 0.749              | 0.675             |
@@ -84,6 +80,8 @@ However, independent of the increase in homogeneity, the clustering techniques s
 Table: Homogeneity of the clustering methods with different vectorizers on the mail corpus {#tbl:mailclustering-results}
 
 ![t-SNE visualization of the mail corpus using summarized word2vec vectors as document vectors](source/figures/mail_tsne_w2v.pdf "t-SNE visualization of the mail corpus"){width=90% #fig:mailw2v-clustering}
+
+However, independent of the increase in homogeneity, the clustering techniques show comparable results, hinting that news articles and emails are exchangeable when comparing the performance of clustering methods.
 
 ### Classification
 
@@ -134,6 +132,8 @@ In summary, the very comparable performance of all classifiers and the peculiari
 [Chapter @sec:new-classes] introduced a technique that allows the creation of new training data and proved that this training data could be used to increase classifier performance when very little training data is available.
 
 [Figure @fig:mail-extended-performance] shows a comparison of two Naive Bayes classifiers performing a binary classification using negative sampling of the training set analogous to the comparison in [Figure @fig:extended-performace-neg-sampling]. The ```original``` classifier only uses the training set elements for training; the ```extended``` classifiers creates new training elements using the method presented in [chapter @sec:new-classes-practical].
+
+\newpage
 
 Once again, the result is directly comparable to the respective result on the news corpus. While the break-even point between the two classifiers for the news corpus was between 70 and 80 training elements in the new class, it was between 80 and 90 elements in the test with the mail corpus. It is also worth mentioning that the maximum gain in accuracy is only around 5.8% on the mail corpus compared to the up to 15% on the news corpus.
 

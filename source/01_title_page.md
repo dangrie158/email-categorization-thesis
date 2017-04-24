@@ -18,33 +18,32 @@ This is the Latex-heavy title page.
 
 
 
-        \vspace{1.5cm}
-
         \Large
-        Master-Thesis \\
+        Master Thesis \\
+        \vspace{1.5cm}
         \normalsize
-        im Studiengang Computer Science and Media\\
-        vorgelegt von \\
+        Course of Study: Computer Science and Media\\
+        Submitted by \\
         \Large
         Daniel Grießhaber \\
-        Matrikelnummer: 30794
+        Matr.-No.: 30794
 
         \vspace{0.8cm}
 
         \normalsize
-        am 11. Mai 2017
-        an der Hochschule der Medien Stuttgart \\
+        2. May 2017 \\
+        Hochschule der Medien Stuttgart \\
 
         \vspace{0.8cm}
 
-        zur Erlangung des akademischen Grades eines\\
+        For the Attainment of the Academic Degree\\
         Master of Science
 
         \vfill
 
         \normalsize
-        Erstprüfer: Prof. Dr. Johannes Maucher \\
-        Zeitprüfer: Prof. Walther Kriha \\
+        First Examiner: Prof. Dr. Johannes Maucher \\
+        Second Examiner: Prof. Walther Kriha \\
 
 
         % Except where otherwise noted, content in this thesis is licensed under a Creative Commons Attribution 4.0 License (http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited. Copyright 2015,Tom Pollard.

@@ -24,15 +24,13 @@ As a natural corpus, the Wikipedia corpus and the news corpus without the articl
 
 To sort the tokens by their relevance, the tf-idf of every token could be calculated. However, this would require a pass over the complete natural corpus to find the IDFs. Therefore, the total term frequency (ttf) over the corpus was used in place of the IDF since this information is already available in the word2vec model due to the construction of the Huffman tree for the hierarchical softmax optimization and the subsampling. The significance of a word is therefore calculated by (@tf-ittf) with $tf_d$ being the term frequency in the document and $ttf$ being the word frequency in the complete corpus.
 
-(@tf-ittf) $$ tf-ittf(w,d)=\frac { { tf }_{ d }(w) }{ ttf(w) } $$
+(@tf-ittf) $$ tf\text{-}ittf(w,d)=\frac { { tf }_{ d }(w) }{ ttf(w) } $$
 
 The ten most relevant tokens according to this measure were then used as keywords for the document. For each keyword, the two closest words according to the cosine similarity of the vectors in the word2vec model were used as a replacement for the keyword. For each similar word, a new document was then created by replacing each occurrence of the keyword with the similar word. This process therefore creates at most 20 new documents from a single document.
 
 ## Problems with synthetic Languages
 
-The test was performed on the German Wikipedia and news corpus. German is a synthetic, fusional language, which often forms specific words using a composition of unspecific words. For example, the word ```orange juice``` is translated into German ```Orangensaft```. This synthetic property proved to be a problem for the algorithm described above since it depends on the keywords being present in the corpus to find similar words for it. However, often specific words that are a composition of multiple words were picked as keywords due to their low ttf. Therefore, the keyword often did not appear in the word2vec model, and thus, no new document could be created.
-
-To overcome this issue, the words need to be decomposed and split into their more general parts. For the word ```Orangensaft```, these parts are ```Orange``` and ```Saft```.
+The test was performed on the German Wikipedia and news corpus. German is a synthetic, fusional language, which often forms specific words using a composition of unspecific words. For example, the word ```orange juice``` is translated into German ```Orangensaft```. This synthetic property proved to be a problem for the algorithm described above since it depends on the keywords being present in the corpus to find similar words for it. However, often specific words that are a composition of multiple words were picked as keywords due to their low ttf. Therefore, the keyword often did not appear in the word2vec model, and thus, no new document could be created. To overcome this issue, the words need to be decomposed and split into their more general parts. For the word ```Orangensaft```, these parts are ```Orange``` and ```Saft```.
 
 The algorithm used for splitting the words can be described by the following pseudocode:
 \newpage

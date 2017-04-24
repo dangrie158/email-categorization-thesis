@@ -107,11 +107,11 @@ $if(graphics)$
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 $endif$
 \ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
+  \PassOptionsToPackage{hyphens}{url}\usepackage[setpagesize=false, % page size defined by xetex
               unicode=false, % unicode breaks when used with xetex
               xetex]{hyperref}
 \else
-  \usepackage[unicode=true]{hyperref}
+  \PassOptionsToPackage{hyphens}{url}\usepackage[unicode=true]{hyperref}
 \fi
 \hypersetup{breaklinks=true,
             bookmarks=true,

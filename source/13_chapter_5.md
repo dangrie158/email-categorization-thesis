@@ -113,9 +113,7 @@ The features found by this process are then classified by a single fully-connect
 
 ### Practical Implementation
 
-For the practical implementation of the network, Keras was used as an abstraction layer on a TensorFlow Backend.
-
-Due to the heavy tail in the length of articles ([Figure @fig:articlesize]), using the maximum article length of 13,133 words as the height for the document matrices ($N$) would require a high amount of padding and therefore a lot of unnecessary filter positions which would produce features that are ignored due to the downstream max-pooling operation.
+For the practical implementation of the network, Keras was used as an abstraction layer on a TensorFlow Backend. Due to the heavy tail in the length of articles ([Figure @fig:articlesize]), using the maximum article length of 13,133 words as the height for the document matrices ($N$) would require a high amount of padding and therefore a lot of unnecessary filter positions which would produce features that are ignored due to the downstream max-pooling operation.
 
 To avoid the superfluous filter positions and increased memory consumption, $N$ was set to the median of the article length of 324 words. With this value, only around half of the documents require padding with an average length of ~155 zero tokens. The other articles require truncation of, on average, ~426 words but due to the heavy tail of the article length, the median is only 284 words.
 
@@ -136,6 +134,8 @@ The scikit-learn implementation was used for all of these classifiers.
 The documentation for the multinomial Naive Bayes[^naive-bayes-doc] states that, while normally used with integer features, fractional features such as tf-idf *may* work. However, in this experiment, the performance of the classifier using tf-idf features was up to 25% worse than the classifier with the same data and only term frequency features.
 
 [^naive-bayes-doc]: http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html
+
+\newpage
 
 ## Results and Discussion {#sec:classifier-result}
 
@@ -160,17 +160,17 @@ Interestingly, the SVM classifier using the summarized word2vec vector features 
 
 This result, however, is only calculated on the complete corpus with a rather large number of training elements in each category. To provide a more complete comparison of the classifier's performance, [Figure @fig:class-performance] plots the accuracy of all classifiers when limited to a smaller number of training elements. The smaller training sets were created by truncating the training elements of each category to a maximum of $N=\{10$, $50$, $100$, $500$, $1000$, $2000$, $5000$, $10000\}$ elements. Due to the different number of elements in each category, this yielded the following number of training elements: $\{90$, $450$, $900$, $4500$, $9000$, $17938$, $31311$, $39379\}$. The validation sets were not truncated so that always the complete set was used during validation.
 
-![Result of the classification comparison over a varying corpus size](source/figures/categorization_comparison.pdf){width=90% #fig:class-performance}
+![Result of the classification over a varying corpus size](source/figures/categorization_comparison.pdf){width=90% #fig:class-performance}
 
 As one can see, the SVC using summarized word2vec document vectors and the maximum likelihood classifier perform best over the range from 450 to 4500 articles in the training set (50 and 500 documents per category respectively). For a very low number of documents, the multinomial Naive Bayes performed best, and it also has an excellent, although not best, performance for all training set sizes. SVC and Random Forest, both using tf-idf vectors, perform relatively similar, starting out with a very low accuracy score for small training sets and, having the steepest increase, perform best when trained with over 1000 elements per class.
 
-The bad performance of the CNN was unexpected, especially since the network was the only classifier which could not be learned on the test machine but had to be trained on a computer with 4 NVIDIA GTX 1080 GPUs which would already disqualify the classifier for the use in an end-user product due to its impracticality. The poor performance may stem from the fact that the CNN was the only classifier which needed to truncate documents to equalize the article length in a reasonable way. This assumption is backed up by the fact that the performance decreased when lowering the maximum number of words per document $N$. With $N$ set to 200 words, the performance of the classifier on the complete corpus decreased to an accuracy score of only 0.598195. To avoid the need for padding and truncation, the classifier could be implemented using a fully convolutional neural network, which was successfully demonstrated as a input dimension independent classifier by @shelhamer2017. However, this approach would not solve the challenge of the, compared to the other classifiers, complex computation to train the network.
+The bad performance of the CNN was unexpected, especially since the network was the only classifier which could not be learned on the test machine but had to be trained on a computer with 4 NVIDIA GTX 1080 GPUs which would already disqualify the classifier for the use in an end-user product due to its impracticality. The poor performance may stem from the fact that the CNN was the only classifier which needed to truncate documents to equalize the article length in a reasonable way. This assumption is backed up by the fact that the performance decreased when lowering the maximum number of words per document $N$. With $N$ set to 200 words, the performance of the classifier on the complete corpus decreased to an accuracy score of only 0.598195. To avoid the need for padding and truncation, the classifier could be implemented using a fully convolutional neural network, which was successfully demonstrated as an input dimension independent classifier by @shelhamer2017. However, this approach would not solve the challenge of the, compared to the other classifiers, complex computation to train the network.
 
 The results show that, for medium sized training sets, the likelihood maximization and the SVC classifier using word2vec document vectors perform best. Although for very large training sets the SVC and Random Forest classifiers using tf-idf document vectors perform on par or marginally better, the superior performance over a wide range of the varying corpus size is an advantage of the word2vec classifiers. For very small training sets, the benefit of the word2vec vectors being trained on a base model becomes visible when comparing both SVM classifiers. While the SVC using tf-idf vectors starts with an accuracy close to random guessing (for $C=9$ classes the expected accuracy of random guessing is $\frac{1}{C} \approx 0.111$), the SVC using word2vec document vectors already has a much higher accuracy when only little training data is available.
 
 With the memory conserving implementation of the derived word2vec models the likelihood maximization classifier, which performed second best over a broad range of training set sizes, becomes of practical use.
 
-Another interesting observation of this experiment, which shall not go unmentioned, is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
+Another interesting observation during this experiment, is the effect of the word2vec model's dimensionality on the performance of the classifiers. [Figure @fig:w2vdimen-comparison] shows the performance of the classifiers with varying training size when using a 200-dimensional and a 400-dimensional word2vec model.
 
 As one can see, using a base model with doubled dimensionality increases the performance of the SVM and the CNN classifier only slightly and in some cases, for the likelihood maximization even for all sizes of the training set, the performance gets even worse.
 

@@ -1,4 +1,4 @@
-# Appendix 1: News Sources List {.unnumbered}
+# Appendix A: News Sources List {.unnumbered}
 \label{sec:appendix1}
 
 \begin{tabbing}

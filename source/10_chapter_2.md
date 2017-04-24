@@ -29,7 +29,7 @@ Gensim is a Python package by Radim Řehůřek that provides efficient implement
 
 **Keras** [^keras]
 
-Keras is a high-level abstraction library written in Python for Theano[^theano] and TensorFlow[^tensorflow] backends. Theano and TensorFlow are both graph based computation libraries for multi-dimensional data flow.  Keras provides a common interface for both libraries. It is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
+Keras is a high-level abstraction library written in Python for Theano[^theano] and TensorFlow[^tensorflow] backends. Theano and TensorFlow are both graph-based computation libraries for multi-dimensional data flow.  Keras provides a common interface for both libraries. It is used to implement the CNN classifier presented in [chapter @sec:cnn-classifier].
 
 [^keras]: https://keras.io
 [^theano]: http://deeplearning.net/software/theano/
@@ -118,9 +118,7 @@ The hierarchical softmax approach now uses each branch of the tree as a normaliz
 
 > This setup replaces one $N$-way choice by a sequence of $O(log N)$ binary choices.
 
-Therefore, the computation of the loss function decreases in its complexity exponentially.
-
-@mikolov2013distributed gives the updated formula to calculate the probability of word ${w}_{t}$ being produced by the context ${c}_{{w}_{t}}$:
+Therefore, the computation of the loss function decreases in its complexity exponentially. @mikolov2013distributed give the updated formula to calculate the probability of word ${w}_{t}$ being produced by the context ${c}_{{w}_{t}}$:
 
 (@hierarchicalsoftmax) $$ p({ w }_{ t }|{ c }_{ { w }_{ t } })=\prod _{ j=1 }^{ L({ w }_{ t })-1 }{ \sigma (\llbracket  n(w,j+1)=ch(n(w,j)) \rrbracket  \cdot { { v' }_{ n(w,j) } }^{ T }) } $$
 
@@ -197,4 +195,4 @@ One way to find the latent variables for the posterior probability is by using G
 
 This algorithm can be repeated for several epochs.
 
-This unsupervised process yields a model that describes every document $d$ as a mixture of $K$ abstract topics $z$. The representation of a document as a mixture of abstract topics can be seen as a compression of the document. The mixture of topics can also be seen as a vector of length $K$. LDA can therefore be seen as a document embedding (in contrast to the word embedding, word2vec) since it embeds each document in a $K$ dimensional vector sapce, in which documents with a similar mixture of topics have a small distance to one another. This vector space model can then be used to find document that are about the same concrete topic by grouping documents with a similar mixture of abstract topics. In the next chapter, LDA is used to group similar documents to reduce the workload of manually assigning a label to a document.
+This unsupervised process yields a model that describes every document $d$ as a mixture of $K$ abstract topics $z$. The representation of a document as a combination of abstract topics can be seen as a compression of the text. The mixture of topics can also be seen as a vector of length $K$. LDA can therefore be considered a document embedding (in contrast to the word embedding, word2vec) since it embeds each document in a $K$ dimensional vector space, in which documents with a similar mixture of topics have a small distance to one another. This vector space model can then be used to find documents that are about the same concrete topic by grouping documents with a similar mixture of abstract topics. In the next chapter, LDA is used to group related documents to reduce the workload of manually assigning a label to a document.

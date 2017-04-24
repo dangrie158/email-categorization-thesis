@@ -17,9 +17,7 @@ For the above reasons, mainly the low corpus size, news articles were used inste
 - The topic of the articles and new emails change over time
 - The length of articles and emails is variable
 
-Since no empirical data could be found about whether or not news articles have the same properties as emails and therefore can be used as a substitute, all developed classification strategies are evaluated against the author's private inbox, consisting of private, study and work related emails.
-
-This section describes properties of the used news corpus and how it was built.
+Since no empirical data could be found about whether or not news articles have the same properties as emails and therefore can be used as a substitute, all developed classification strategies are evaluated against the author's private inbox, consisting of private, study and work related emails. This section describes properties of the used news corpus and how it was built.
 
 The corpus used in this thesis was build from the 21st of November 2016 to 6th of March 2017. It consists of 54.691 German news articles in 11 different categories. [Figure @fig:corpuscount] shows the growth of the corpus over time. The flat part at the end of December is due to a server outage over Christmas. [Figure @fig:articlesize] shows the size of the articles in 20 bins. The histogram does not show outlier articles with more than 2000 words. However, it still represents over 98.9% of all items.
 
@@ -29,7 +27,7 @@ The corpus used in this thesis was build from the 21st of November 2016 to 6th o
 
 ## Crawling
 
-The news articles were crawled by a Node.js[^3] script in a 2-step process. First, a list of RSS feeds is being crawled and every link to an article is saved. The entries are deduplicated based on their title from the RSS feed and the publishing date to avoid crawling the same articles multiple times. The list of feeds that were crawled is based on an updated version of the list of German news sites used by Sasha Can[^4] ([-@can2016entwicklung]). For the full list of feeds see Appendix 1.
+The news articles were crawled by a Node.js[^3] script in a 2-step process. First, a list of RSS feeds is being crawled and every link to an article is saved. The entries are deduplicated based on their title from the RSS feed and the publishing date to avoid crawling the same articles multiple times. The list of feeds that were crawled is based on an updated version of the list of German news sites used by Sasha Can[^4] ([-@can2016entwicklung]). For the full list of feeds see Appendix A.
 
 In the next step, each previously unvisited article is loaded via the link extracted from the feed and the full content of the page is saved in a MongoDB[^5] database.
 

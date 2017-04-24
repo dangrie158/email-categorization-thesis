@@ -26,6 +26,8 @@ help:
 	@echo 'or generic ones from: https://github.com/jgm/pandoc-templates		  '
 
 pdf:
+	rm -f ./source/references.bib.bak
+	sed -i.bak 's/phdthesis/masterthesis/' ./source/references.bib
 	pandoc "$(INPUTDIR)"/*.md \
 	"$(INPUTDIR)"/metadata.yml \
 	--filter pandoc-shortcaption \
@@ -46,6 +48,8 @@ pdf:
 #	--verbose
 
 tex:
+	rm -f ./source/references.bib.bak
+	sed -i.bak 's/phdthesis/masterthesis/' ./source/references.bib
 	pandoc "$(INPUTDIR)"/*.md \
 	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.tex" \
@@ -61,6 +65,8 @@ tex:
 	--csl="$(STYLEDIR)/ref_format.csl"
 
 docx:
+	rm -f ./source/references.bib.bak
+	sed -i.bak 's/phdthesis/masterthesis/' ./source/references.bib
 	pandoc "$(INPUTDIR)"/*.md \
 	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.docx" \
@@ -70,6 +76,8 @@ docx:
 	--toc
 
 html:
+	rm -f ./source/references.bib.bak
+	sed -i.bak 's/phdthesis/masterthesis/' ./source/references.bib
 	pandoc "$(INPUTDIR)"/*.md \
 	"$(INPUTDIR)"/metadata.yml \
 	-o "$(OUTPUTDIR)/thesis.html" \
