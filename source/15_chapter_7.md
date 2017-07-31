@@ -21,9 +21,7 @@ Due to the message format, the emails were preprocessed using the following step
 
 Since neither the mbox format nor the RFCs specify an encoding for the message body, mbox can be seen as a binary format. To equalize the coding to UTF-8, the ```charset``` section of the ```Content-Type``` header was used to find the current encoding. If not present, ASCII was assumed.
 
-The mbox format was parsed using the mailbox package in the Python standard library[^mbox-lib].
-
-To save the preprocessed emails to disk, each email was written into a separate line to allow for easy loading using gensim's ```LineSentence``` class[^textcorpus-class].
+The mbox format was parsed using the mailbox package in the Python standard library[^mbox-lib]. To save the preprocessed emails to disk, each email was written into a separate line to allow for easy loading using gensim's ```LineSentence``` class[^textcorpus-class].
 
 [^mailx]: http://pubs.opengroup.org/onlinepubs/9699919799/utilities/mailx.html
 [^rfc-2822]: https://www.ietf.org/rfc/rfc2822.txt
